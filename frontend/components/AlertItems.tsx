@@ -1,22 +1,29 @@
 import Card from "./Card";
 import { alerts, icons } from "../constants";
-import { View, Image, Text, StyleSheet, FlatList, Pressable } from "react-native";
+import {
+  View,
+  Image,
+  Text,
+  StyleSheet,
+  FlatList,
+  Pressable,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useAppContext } from "@/providers/appContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 
-const AlertItems = ({isHome}) => {
-  const { alertEnabled, setAlertEnabled } = useAppContext()
+const AlertItems: React.FC<{ isHome: boolean }> = ({ isHome }) => {
+  const { alertEnabled, setAlertEnabled } = useAppContext();
 
   return (
     <FlatList
       data={alerts}
       className="mx-2"
       renderItem={({ item: alert, index }) => {
-        return (
-          (isHome ? alertEnabled[index] : true) &&
-          <Card
+        if ((isHome && alertEnabled[index]) || !isHome){
+          return (
+            <Card
             key={Math.random().toString()}
             className="flex-row items-center justify-between bg-white mt-1 p-5 gap-4"
           >
@@ -30,31 +37,44 @@ const AlertItems = ({isHome}) => {
                 <Text className="text-sm text-gray-600 pl-1 pr-1">{`${alert.totalAlerts} Alerts today`}</Text>
               </View>
             </View>
-            <Pressable className="flex-col items-center gap-1" onPress={() => {
-              router.push("/modal")
-              setAlertEnabled((prevState) => {
-                const temp = [...prevState]
+            <Pressable
+              className="flex-col items-center gap-1"
+              onPress={() => {
+                setAlertEnabled((prevState) => {
+                  const temp = [...prevState];
 
-                temp[index] = !temp[index]
+                  temp[index] = !temp[index];
 
-                const storeInStorage = async () => {
-                  if (temp[index]){
-                    const isAvailable = await AsyncStorage.getItem(`alertNo-${index}`)
+                  const storeInStorage = async () => {
+                    if (temp[index]) {
+                      const isAvailable = await AsyncStorage.getItem(
+                        `alertNo-${index}`
+                      );
 
-                    if (isAvailable){
-                      await AsyncStorage.removeItem(`alertNo-${index}`)
+                      if (isAvailable) {
+                        await AsyncStorage.removeItem(`alertNo-${index}`);
+                      }
+                    } else {
+                      await AsyncStorage.setItem(
+                        `alertNo-${index}`,
+                        "Opted-Out"
+                      );
                     }
-                  } else {
-                    await AsyncStorage.setItem(`alertNo-${index}`, "Opted-Out")
-                  }
+                  };
+
+                  storeInStorage();
+
+                  return temp;
+                });
+              }}
+            >
+              <Ionicons
+                name={
+                  alertEnabled[index] ? "checkmark-circle" : "remove-circle"
                 }
-
-                storeInStorage()
-
-                return temp
-              })
-            }}>
-              <Ionicons name={alertEnabled[index] ? "checkmark-circle" : "remove-circle"} size={30} color={alertEnabled[index] ? "#22c55e" : "#FF8808"} />
+                size={30}
+                color={alertEnabled[index] ? "#22c55e" : "#FF8808"}
+              />
               <View className="rounded-lg bg-gray-100 pl-2 pr-2">
                 <Text className="text-xs">
                   {alertEnabled[index] ? "Active" : "Off"}
@@ -62,7 +82,10 @@ const AlertItems = ({isHome}) => {
               </View>
             </Pressable>
           </Card>
-        );
+          )
+        } else {
+          return null
+        }
       }}
     />
   );

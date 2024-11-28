@@ -5,6 +5,7 @@ import {
   ScrollView,
   Pressable,
   Vibration,
+  ToastAndroid,
 } from "react-native";
 
 import Form from "@/components/Form";
@@ -16,8 +17,6 @@ import { useState } from "react";
 import { useAppContext } from "@/providers/appContext";
 import { startRecordingAudio, stopRecordingAudio } from "@/utils/audio";
 import { Gender } from "@/providers/appContext";
-import { triggerVibration } from "@/utils/notifications";
-import { router } from "expo-router";
 
 const RegisterScreen = () => {
   const [recording, setRecording] = useState<boolean>(false);
@@ -31,7 +30,7 @@ const RegisterScreen = () => {
     gender: Gender
   ) => {
     if (!haveAudio) {
-      // ToastAndroid.show("You haven't Recorded an Voice", ToastAndroid.SHORT)
+      ToastAndroid.show("You haven't Recorded an Voice", ToastAndroid.SHORT)
       return;
     }
 

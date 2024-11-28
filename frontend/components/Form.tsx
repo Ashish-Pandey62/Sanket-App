@@ -1,10 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
-import { usePathname, useSegments } from "expo-router";
+import { usePathname } from "expo-router";
 import { useState } from "react";
-import { View, Text, TextInput, Switch, Pressable, Button } from "react-native";
+import { View, Text, TextInput, Pressable } from "react-native";
 import CustomButton from "./CustomButton";
 import { Gender } from "@/providers/appContext";
-import {icons} from "@/constants"
 
 const Form: React.FC<{
   onSubmit: (
