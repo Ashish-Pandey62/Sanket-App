@@ -56,6 +56,8 @@ alerts = {
     "baby cry": "Baby is crying! Alerting user...",
     "siren": "Emergency siren detected!",
     "doorbell": "Someone is at the door!",
+    "pets": "Pets are making noise!"
+
 }
 
 def process_audio_file(file_path, confidence_threshold=0.5):
