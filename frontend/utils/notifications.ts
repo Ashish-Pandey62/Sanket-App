@@ -28,3 +28,7 @@ export const triggerNotification = async ({ title = "Sanket's Notification", bod
 export const triggerVibration = ({ duration = 1000, repeat = false }: { duration?: number, repeat?: boolean }) => {
     Vibration.vibrate([duration, duration], repeat); // Vibrates for 1 second (default)
 };
+
+export const triggerQuickVibration = ({ duration = 1000 }) => {
+    Vibration.vibrate(duration)
+}

@@ -79,12 +79,12 @@ const RegisterScreen = () => {
               setHaveAudio(true);
               handleRecordStop();
             }}
-            // onPress={() => {
-            //   const vibrationTime = 500;
-            //   setIsVibrating(true);
-            //   triggerVibration({ duration: vibrationTime, repeat: true });
-            //   router.push("/modal");
-            // }}
+            onPress={() => {
+              // const vibrationTime = 500;
+              // setIsVibrating(true);
+              // triggerVibration({ duration: vibrationTime, repeat: true });
+              router.push("/modal");
+            }}
             className={`mt-5 justify-start items-center self-center border-[12px] ${
               recording ? "border-primary" : "border-secondary/60"
             } rounded-full`}
