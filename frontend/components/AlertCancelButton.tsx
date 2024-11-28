@@ -3,7 +3,7 @@ import React from "react";
 import { View, Text, ImageSourcePropType, Pressable } from "react-native";
 
 
-const AlertCancelButton: React.FC<{onPress: ()=>{}}> = ({
+const AlertCancelButton: React.FC<{onPress: () => void}> = ({
     onPress
 }) => {
   return (

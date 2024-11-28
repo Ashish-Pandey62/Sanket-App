@@ -21,12 +21,12 @@ import {
 import MyTabBar from "@/components/MyTabBar";
 import TabBarButton from "@/components/TabBarButton";
 import { router } from "expo-router";
-import { useAppContext } from "@/providers/appContext";
+import { useAppContext, AlertKeys } from "@/providers/appContext";
 
 // WebSocket related code goes here............................
 
 interface ServerToClient {
-  alert: ({ sound_label }: { sound_label: string }) => void;
+  alert: ({ sound_label }: { sound_label: AlertKeys }) => void;
 }
 
 interface ClientToServer {
@@ -43,7 +43,7 @@ const socket: Socket<ServerToClient, ClientToServer> = io(
 export default function RootLayout() {
   //All setup related code goes here..............................
 
-  const { isVibrating, setIsVibrating } = useAppContext()
+  const { setIsVibrating, setModelKey, isRecording } = useAppContext()
 
   useEffect(() => {
     requestNotificationPermission();
@@ -58,6 +58,7 @@ export default function RootLayout() {
       // Sending the data to the backend continuously start here..................
 
       socket.emit("storeChunk", audioBuffer);
+      // socket.emit("storeChunk", {audioBuffer, isRecording});
 
       // Sending the data to the backend continuously ends here..................
     });
@@ -69,29 +70,44 @@ export default function RootLayout() {
 
     socket.on("alert", async ({ sound_label }) => {
 
-      console.log(sound_label)
+      if (sound_label === "fireAlarm"){
+        triggerNotification({title: "Fire alarm!", body: "There is an alarm ringing!"});
 
-      if (sound_label === ""){
-        triggerNotification({});
+        const vibrationTime = 500
+        setIsVibrating(true)
+        triggerVibration({ duration: vibrationTime, repeat: true });
 
-        const vibrationTime = 2000
+      } else if (sound_label === "infantCrying") {
+
+        triggerNotification({title: "Infant Crying", body: "An infant crying sound is detected!"});
+        const vibrationTime = 1000
         setIsVibrating(true)
         triggerVibration({ duration: vibrationTime });
         setTimeout(() => setIsVibrating(false), vibrationTime);
 
-      } else if (sound_label === "alert") {
+      } else if (sound_label === "petSound") {
 
-        triggerNotification({});
+        triggerNotification({title: "Pet Sound", body: "A pet is making some sound"});
+
+        const vibrationTime = 1000
         setIsVibrating(true)
-        triggerVibration({ duration: 2000, repeat: true });
+        triggerVibration({ duration: vibrationTime });
+        setTimeout(() => setIsVibrating(false), vibrationTime);
+        
+      } else if (sound_label === "doorBell") {
+
+        triggerNotification({title: "Ding Dong!", body: "Some one is at your door"});
+
+        const vibrationTime = 1000
+        setIsVibrating(true)
+        triggerVibration({ duration: vibrationTime });
+        setTimeout(() => setIsVibrating(false), vibrationTime);
 
       }
-      
-      //temporary
-      triggerNotification({});
 
       // await playARandomSound();
 
+      setModelKey(sound_label)
       router.push("/modal")
     });
 
@@ -101,19 +117,7 @@ export default function RootLayout() {
   //All setup related code ends here..............................
 
   const detectionCallback = async (keywordIndex: number) => {
-    if (keywordIndex === 2) {
-      console.log(`detected porcupine...`);
-    } else if (keywordIndex === 1) {
-      console.log(`detected bumblebee...`);
-    } else if (keywordIndex === 0) {
-      console.log(`At your service sir....`);
-
-      //Sending the signal to the backend on detection starts here..............
-
-      // socket.emit("wakeWord");
-      
-      //Sending the signal to the backend on detection ends here..............
-    }
+    
     socket.emit("wakeWord");
   };
 
