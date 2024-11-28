@@ -26,7 +26,7 @@ import { useAppContext } from "@/providers/appContext";
 // WebSocket related code goes here............................
 
 interface ServerToClient {
-  vibrate: (type: string) => void;
+  alert: ({ sound_label }: { sound_label: string }) => void;
 }
 
 interface ClientToServer {
@@ -35,7 +35,7 @@ interface ClientToServer {
 }
 
 const socket: Socket<ServerToClient, ClientToServer> = io(
-  "http://10.10.11.46:3000/"
+  "http://10.10.11.40:3000/"
 );
 
 // WebSocket related code goes ends here............................
@@ -67,9 +67,11 @@ export default function RootLayout() {
 
     // setup for event listener from the backend starts here................................................
 
-    socket.on("vibrate", async (type) => {
+    socket.on("alert", async ({ sound_label }) => {
 
-      if (type === "casual"){
+      console.log(sound_label)
+
+      if (sound_label === ""){
         triggerNotification({});
 
         const vibrationTime = 2000
@@ -77,7 +79,7 @@ export default function RootLayout() {
         triggerVibration({ duration: vibrationTime });
         setTimeout(() => setIsVibrating(false), vibrationTime);
 
-      } else if (type === "alert") {
+      } else if (sound_label === "alert") {
 
         triggerNotification({});
         setIsVibrating(true)
