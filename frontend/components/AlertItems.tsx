@@ -4,8 +4,9 @@ import { View, Image, Text, StyleSheet, FlatList, Pressable } from "react-native
 import { Ionicons } from "@expo/vector-icons";
 import { useAppContext } from "@/providers/appContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router } from "expo-router";
 
-const AlertItems = () => {
+const AlertItems = ({isHome}) => {
   const { alertEnabled, setAlertEnabled } = useAppContext()
 
   return (
@@ -14,6 +15,7 @@ const AlertItems = () => {
       className="mx-2"
       renderItem={({ item: alert, index }) => {
         return (
+          (isHome ? alertEnabled[index] : true) &&
           <Card
             key={Math.random().toString()}
             className="flex-row items-center justify-between bg-white mt-1 p-5 gap-4"
@@ -29,6 +31,7 @@ const AlertItems = () => {
               </View>
             </View>
             <Pressable className="flex-col items-center gap-1" onPress={() => {
+              router.push("/modal")
               setAlertEnabled((prevState) => {
                 const temp = [...prevState]
 
