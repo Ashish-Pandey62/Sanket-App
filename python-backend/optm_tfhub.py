@@ -59,7 +59,7 @@ alerts = {
     "pets": "petSound"
 }
 
-def process_audio_file(file_path, confidence_threshold=0.5):
+def process_audio_file(file_path, confidence_threshold=0.25):
     start_time = datetime.now()
     
     # Classify audio

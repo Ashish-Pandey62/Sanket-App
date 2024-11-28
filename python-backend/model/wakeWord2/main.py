@@ -5,17 +5,27 @@ import datetime
 start = datetime.datetime.now()
 model = whisper.load_model("base")
 
-result = model.transcribe("suna_ram.m4a") 
+def run_wakeword(file_path):
+    result = model.transcribe(file_path) 
 
-print("Transcription:")
-print(result["text"])
+    print("Transcription:")
+    print(result["text"])
 
-transcription_without_punctuation = result["text"].translate(str.maketrans('', '', string.punctuation))
-list_of_words = transcription_without_punctuation.split()
+    transcription_without_punctuation = result["text"].translate(str.maketrans('', '', string.punctuation))
+    list_of_words = transcription_without_punctuation.split()
 
-wake_word = "sunoram"
+    return list_of_words
+    # wake_word = "sunoram"
 
-wake_word_list = wake_word.lower().split()
+    # wake_word_list = wake_word.lower().split()
+
+    # if is_wake_word_detected(wake_word_list, list_of_words):
+    #     print(f"'{wake_word}' detected!")
+    # else:
+    #     print(f"'{wake_word}' was not detected!")
+
+    end = datetime.datetime.now()
+    print("Time taken:", (end-start).total_seconds(), "seconds")
 
 def is_wake_word_detected(wake_word_list, transcription_list):
     transcription_lower = [word.lower() for word in transcription_list]
@@ -28,10 +38,7 @@ def is_wake_word_detected(wake_word_list, transcription_list):
     except ValueError:
         return False  
 
-if is_wake_word_detected(wake_word_list, list_of_words):
-    print(f"'{wake_word}' detected!")
-else:
-    print(f"'{wake_word}' was not detected!")
 
-end = datetime.datetime.now()
-print("Time taken:", (end-start).total_seconds(), "seconds")
+if __name__ == "__main__":
+    run_wakeword("suna_ram.m4a")
+
