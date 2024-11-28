@@ -13,7 +13,18 @@ import {
 const ACCESS_KEY = "cTJW0z0/muADrS8/S6Kd1nL34MCdd6ubiNsDP1v9uegyLrhlIX8gIg==";
 
 //The order of the word is DIRECTLY RELATED TO THE "keywordIndex" in the detectionCallback function
-const WAKE_WORDS = ["सुन-राम_hi_android_v3_0_0.ppn"];
+const WAKE_WORDS = [
+  "सुन-राम_hi_android_v3_0_0.ppn",
+  "अंकल_hi_android_v3_0_0.ppn",
+  "आंटी-आंटी_hi_android_v3_0_0.ppn",
+  "ओह-दाई_hi_android_v3_0_0.ppn",
+  "ओह-दीदी_hi_android_v3_0_0.ppn",
+  "दाई-दाई_hi_android_v3_0_0.ppn",
+  "दाई-सुन_hi_android_v3_0_0.ppn",
+  "दिदी-सुन_hi_android_v3_0_0.ppn",
+  "भाई-भाई_hi_android_v3_0_0.ppn",
+  "भाई-सुन_hi_android_v3_0_0.ppn",
+];
 
 const PorcupineContext = createContext<
   | {
@@ -46,18 +57,18 @@ const PorcupineProvider: React.FC<
   };
 
   useEffect(() => {
-    // const setup = async () => {
-    //   try {
-    //     const porcupineManager = await PorcupineManager.fromKeywordPaths(
-    //       ACCESS_KEY,
-    //       WAKE_WORDS,
-    //       detectionCallback,
-    //       (err) =>
-    //         console.log("We faced an Error detecting the wake word => ", err),
-    //       "porcupine_params_hi.pv" // For hindi words
-    //     );
+    const setup = async () => {
+      try {
+        const porcupineManager = await PorcupineManager.fromKeywordPaths(
+          ACCESS_KEY,
+          WAKE_WORDS,
+          detectionCallback,
+          (err) =>
+            console.log("We faced an Error detecting the wake word => ", err),
+          "porcupine_params_hi.pv" // For hindi words
+        );
 
-        //Uncomment the code below and comment the above one to use the built in keywords.
+        // Uncomment the code below and comment the above one to use the built in keywords.
 
         //   const porcupineManager = await PorcupineManager.fromBuiltInKeywords(
         //     ACCESS_KEY,
@@ -70,13 +81,13 @@ const PorcupineProvider: React.FC<
         //     (err) => console.log("We faced an Error detecting the wake word => ", err)
         //   );
 
-    //     setPorcupine(porcupineManager);
-    //   } catch (error) {
-    //     console.log("The Porcupine manager could not be initialized!");
-    //   }
-    // };
+        setPorcupine(porcupineManager);
+      } catch (error) {
+        console.log("The Porcupine manager could not be initialized!");
+      }
+    };
 
-    // setup();
+    setup();
   }, []);
 
   return (

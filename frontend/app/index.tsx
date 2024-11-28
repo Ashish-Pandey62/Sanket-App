@@ -7,26 +7,39 @@ import {
 } from "react-native";
 import Form from "@/components/Form";
 
-import { Gender } from "@/providers/appContext";
+import { Gender, useAppContext } from "@/providers/appContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import HeaderBox from "@/components/HeaderBox";
 
 export default function Index() {
-  // useEffect(() => {
-  //   const checkIfRegistered = async () => {
-  //     const firstName = await AsyncStorage.getItem("firstName");
+  const { setAlertEnabled } = useAppContext()
 
-  //     if (firstName) {
-  //       ToastAndroid.show(`Welcome Back, ${firstName}!`, ToastAndroid.SHORT);
+  useEffect(() => {
+    const checkIfRegistered = async () => {
+      const firstName = await AsyncStorage.getItem("firstName");
 
-  //       router.replace("/(tabs)/home")
-  //     }
-  //   };
+      if (firstName) {
+        ToastAndroid.show(`Welcome Back, ${firstName}!`, ToastAndroid.SHORT);
 
-  //   checkIfRegistered();
-  // }, []);
+        const myAlerts = new Array(5).fill(true)
+        for (let i = 0; i < 5; i++){
+          const anything = await AsyncStorage.getItem(`alertNo-${i}`)
+
+          if (anything){
+            myAlerts[i] = false
+          }
+        }
+
+        setAlertEnabled(myAlerts)
+
+        router.replace("/(tabs)/home")
+      }
+    };
+
+    checkIfRegistered();
+  }, []);
 
   const handleSubmit = async (
     firstName: string,

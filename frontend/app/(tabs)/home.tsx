@@ -31,9 +31,6 @@ const HomeScreen = () => {
   return (
     <SafeAreaView className="flex-1 items-center gap-5">
       <HeaderBox title="Welcome" paragraph="Don't worry I'll inform you if someone calls you" />
-      {/* <Text className="text-xl">This is the home screen</Text>
-      <Button title="Start Recording" onPress={startRecording} />
-      <Button title="Stop Recording" onPress={stopRecording} /> */}
       <AlertItems />
     </SafeAreaView>
   );

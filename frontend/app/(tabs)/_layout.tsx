@@ -21,11 +21,12 @@ import {
 import MyTabBar from "@/components/MyTabBar";
 import TabBarButton from "@/components/TabBarButton";
 import { router } from "expo-router";
+import { useAppContext } from "@/providers/appContext";
 
 // WebSocket related code goes here............................
 
 interface ServerToClient {
-  vibrate: () => void;
+  vibrate: (type: string) => void;
 }
 
 interface ClientToServer {
@@ -34,7 +35,7 @@ interface ClientToServer {
 }
 
 const socket: Socket<ServerToClient, ClientToServer> = io(
-  "http://192.168.101.10:3000/"
+  "http://10.10.11.46:3000/"
 );
 
 // WebSocket related code goes ends here............................
@@ -42,36 +43,55 @@ const socket: Socket<ServerToClient, ClientToServer> = io(
 export default function RootLayout() {
   //All setup related code goes here..............................
 
+  const { isVibrating, setIsVibrating } = useAppContext()
+
   useEffect(() => {
-    // requestNotificationPermission();
+    requestNotificationPermission();
 
-    // initializeNotifications();
+    initializeNotifications();
 
-    // initializeAudioRecorder((data) => {
-    //   //This function gets executed "sampleRate: 16000" many times per second after recorder starts.
+    initializeAudioRecorder((data) => {
+      //This function gets executed "sampleRate: 16000" many times per second after recorder starts.
 
-    //   const audioBuffer = Buffer.from(data, "base64");
+      const audioBuffer = Buffer.from(data, "base64");
 
-    //   // Sending the data to the backend continuously start here..................
+      // Sending the data to the backend continuously start here..................
 
-    //   socket.emit("storeChunk", audioBuffer);
+      socket.emit("storeChunk", audioBuffer);
 
-    //   // Sending the data to the backend continuously ends here..................
-    // });
+      // Sending the data to the backend continuously ends here..................
+    });
 
-    //this is just there to make sure audio can play in the background, if not required you may remove it
-    // allowAudioPlaybackFromBackground();
+    // this is just there to make sure audio can play in the background, if not required you may remove it
+    allowAudioPlaybackFromBackground();
 
-    //setup for event listener from the backend starts here................................................
+    // setup for event listener from the backend starts here................................................
 
-    // socket.on("vibrate", async () => {
-    //   triggerNotification({});
-    //   triggerVibration({});
+    socket.on("vibrate", async (type) => {
 
-    //   await playARandomSound();
+      if (type === "casual"){
+        triggerNotification({});
 
-    //   router.push("/modal")
-    // });
+        const vibrationTime = 2000
+        setIsVibrating(true)
+        triggerVibration({ duration: vibrationTime });
+        setTimeout(() => setIsVibrating(false), vibrationTime);
+
+      } else if (type === "alert") {
+
+        triggerNotification({});
+        setIsVibrating(true)
+        triggerVibration({ duration: 2000, repeat: true });
+
+      }
+      
+      //temporary
+      triggerNotification({});
+
+      // await playARandomSound();
+
+      router.push("/modal")
+    });
 
     //setup for event listener from the backend ends here................................................
   }, []);
@@ -88,10 +108,11 @@ export default function RootLayout() {
 
       //Sending the signal to the backend on detection starts here..............
 
-      socket.emit("wakeWord");
-
+      // socket.emit("wakeWord");
+      
       //Sending the signal to the backend on detection ends here..............
     }
+    socket.emit("wakeWord");
   };
 
   return (
@@ -102,19 +123,13 @@ export default function RootLayout() {
         <TabList asChild>
           <MyTabBar>
             <TabTrigger name="home" href={"/(tabs)/home"} asChild>
-              <TabBarButton type="home">
-                <Text className="p-4">Home</Text>
-              </TabBarButton>
+              <TabBarButton type="home" />
             </TabTrigger>
-            <TabTrigger name="alerts" href={"/(tabs)/register"} asChild>
-              <TabBarButton type="alerts">
-                <Text className="p-4">Alerts</Text>
-              </TabBarButton>
+            <TabTrigger name="alerts" href={"/(tabs)/alerts"} asChild>
+              <TabBarButton type="alerts" />
             </TabTrigger>
-            <TabTrigger name="voices" href={"/(tabs)/jpt"} asChild>
-              <TabBarButton type="voices">
-                <Text className="p-4">Voices</Text>
-              </TabBarButton>
+            <TabTrigger name="voices" href={"/(tabs)/register"} asChild>
+              <TabBarButton type="voices" />
             </TabTrigger>
           </MyTabBar>
         </TabList>

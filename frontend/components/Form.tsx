@@ -113,7 +113,7 @@ const Form: React.FC<{
         </Pressable>
       </View>
       <View className="self-end">
-        <CustomButton title="Complete" icon={icons.tick} isTab={false}
+        <CustomButton title="Complete" icon={"checkmark-sharp"} isTab={false}
         disabled={
           (firstNameIsTouched && firstName.trim() === "") ||
           (lastNameIsTouched && lastName.trim() === "") ||

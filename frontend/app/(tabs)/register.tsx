@@ -4,7 +4,7 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   Pressable,
-  ToastAndroid,
+  Vibration,
 } from "react-native";
 
 import Form from "@/components/Form";
@@ -16,50 +16,52 @@ import { useState } from "react";
 import { useAppContext } from "@/providers/appContext";
 import { startRecordingAudio, stopRecordingAudio } from "@/utils/audio";
 import { Gender } from "@/providers/appContext";
+import { triggerVibration } from "@/utils/notifications";
+import { router } from "expo-router";
 
 const RegisterScreen = () => {
   const [recording, setRecording] = useState<boolean>(false);
-  const [haveAudio, setHaveAudio] = useState<boolean>(false)
+  const [haveAudio, setHaveAudio] = useState<boolean>(false);
 
-  const { isRecording, setVoices } = useAppContext()
+  const { isRecording, setVoices, setIsVibrating } = useAppContext();
 
   const handleSubmit = (
     firstName: string,
     lastName: string,
     gender: Gender
   ) => {
-    if (!haveAudio){
+    if (!haveAudio) {
       // ToastAndroid.show("You haven't Recorded an Voice", ToastAndroid.SHORT)
-      return 
+      return;
     }
 
-    setHaveAudio(false)
+    setHaveAudio(false);
 
     //Send the data to the Backend about who the recorded voice belongs to....
-    setVoices((prevState) => [...prevState, { firstName, lastName, gender }])
+    setVoices((prevState) => [...prevState, { firstName, lastName, gender }]);
     console.log(firstName, lastName, gender);
   };
 
   const handleRecordStart = () => {
     setRecording(true);
 
-    if (!isRecording){
-      startRecordingAudio()
+    if (!isRecording) {
+      startRecordingAudio();
     }
 
     //Emit to DB that voice should be stored
-    console.log("Store the Voice from now")
+    console.log("Store the Voice from now");
   };
 
   const handleRecordStop = async () => {
     setRecording(false);
 
-    if (!isRecording){
-      await stopRecordingAudio()
+    if (!isRecording) {
+      await stopRecordingAudio();
     }
 
     //Emit to DB that voice storing had ended
-    console.log("Stop the storing now")
+    console.log("Stop the storing now");
   };
 
   return (
@@ -73,10 +75,17 @@ const RegisterScreen = () => {
           <Pressable
             onPressIn={handleRecordStart}
             onPressOut={() => {
-              setHaveAudio(true)
-              handleRecordStop()
+              setHaveAudio(true);
+              handleRecordStop();
             }}
-            className={`mt-5 justify-start items-center self-center border-[12px] ${recording ? "border-primary" : "border-secondary/60"} rounded-full`}
+            // onPress={() => {
+            //   setIsVibrating(true)
+            //   triggerVibration({ duration: 500, repeat: true })
+            //   router.push("/modal")
+            // }}
+            className={`mt-5 justify-start items-center self-center border-[12px] ${
+              recording ? "border-primary" : "border-secondary/60"
+            } rounded-full`}
           >
             <Ionicons
               name="mic-outline"
@@ -85,12 +94,17 @@ const RegisterScreen = () => {
               className="bg-primary p-8 rounded-full"
             />
           </Pressable>
-          {recording && <Text className="font-thin text-center mt-5">
-            Listening...
-          </Text>}
-          {haveAudio && !recording && <Text className="font-thin text-center mt-5 text-purple-800">
-            A Voice is Recorded
-          </Text>}
+          {recording && (
+            <Text className="font-thin text-center mt-5">Listening...</Text>
+          )}
+          {haveAudio && !recording && (
+            <View className="justify-center items-center flex-row mt-5 gap-2">
+              <Ionicons name="document" color={"#6b21a8"} />
+              <Text className="font-thin text-center text-purple-800">
+                A Voice is Recorded
+              </Text>
+            </View>
+          )}
           <Text className="font-thin text-center mt-5">
             Press and Hold to record
           </Text>

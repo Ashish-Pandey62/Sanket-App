@@ -1,40 +1,75 @@
-import Card from "./Card"
-import {alerts, icons} from "../constants"
-import { View, Image, Text, StyleSheet } from "react-native"
+import Card from "./Card";
+import { alerts, icons } from "../constants";
+import { View, Image, Text, StyleSheet, FlatList, Pressable } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { useAppContext } from "@/providers/appContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const AlertItems = () => {
-    return (
-        <View>
-            {
-            alerts.map((alert, index) => (
-            <Card className="flex flex-row items-center justify-between bg-white rounded-2xl self-stretch ml-5 mr-5 p-5 gap-4">
-                <View>
-                    <Image source={alert.icon} style={styles.image}/>
-                </View>
-                <View className="flex flex-col w-60">
-                    <Text className="text-lg font-semibold">{alert.title}</Text>
-                    <Text className="text-gray-500 text-sm">{alert.description}</Text>
-                    <View>
-                        <Text className="text-sm text-gray-600 rounded-2xl bg-gray-100 w-fit pl-2 pr-2">{`${alert.totalAlerts} Alerts today`}</Text>
-                    </View>
-                </View>
-                <View className="flex flex-col items-center gap-1">
-                    <Image source={icons.green_tick} />
-                    <View className="rounded-lg bg-gray-100 pl-2 pr-2">
-                        <Text className="text-xs">{alert.active ? 'Active':'Inactive'}</Text>
-                    </View>
-                </View>
-            </Card>
-            ))}
-        </View>
-    )
-}
+  const { alertEnabled, setAlertEnabled } = useAppContext()
+
+  return (
+    <FlatList
+      data={alerts}
+      className="mx-2"
+      renderItem={({ item: alert, index }) => {
+        return (
+          <Card
+            key={Math.random().toString()}
+            className="flex-row items-center justify-between bg-white mt-1 p-5 gap-4"
+          >
+            <View>
+              <Image source={alert.icon} style={styles.image} />
+            </View>
+            <View className="flex-col w-3/5 items-stretch">
+              <Text className="text-lg font-semibold">{alert.title}</Text>
+              <Text className="text-gray-500 text-sm">{alert.description}</Text>
+              <View className="rounded-2xl bg-gray-100 self-start">
+                <Text className="text-sm text-gray-600 pl-1 pr-1">{`${alert.totalAlerts} Alerts today`}</Text>
+              </View>
+            </View>
+            <Pressable className="flex-col items-center gap-1" onPress={() => {
+              setAlertEnabled((prevState) => {
+                const temp = [...prevState]
+
+                temp[index] = !temp[index]
+
+                const storeInStorage = async () => {
+                  if (temp[index]){
+                    const isAvailable = await AsyncStorage.getItem(`alertNo-${index}`)
+
+                    if (isAvailable){
+                      await AsyncStorage.removeItem(`alertNo-${index}`)
+                    }
+                  } else {
+                    await AsyncStorage.setItem(`alertNo-${index}`, "Opted-Out")
+                  }
+                }
+
+                storeInStorage()
+
+                return temp
+              })
+            }}>
+              <Ionicons name={alertEnabled[index] ? "checkmark-circle" : "remove-circle"} size={30} color={alertEnabled[index] ? "#22c55e" : "#FF8808"} />
+              <View className="rounded-lg bg-gray-100 pl-2 pr-2">
+                <Text className="text-xs">
+                  {alertEnabled[index] ? "Active" : "Off"}
+                </Text>
+              </View>
+            </Pressable>
+          </Card>
+        );
+      }}
+    />
+  );
+};
 
 const styles = StyleSheet.create({
-    image: {
-        width: 50,
-        height: 50,
-    }
-})
+  image: {
+    width: 50,
+    height: 50,
+  },
+});
 
-export default AlertItems
+export default AlertItems;
