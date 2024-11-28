@@ -62,10 +62,12 @@ def process_audio_file(file_path, confidence_threshold=0.5):
     
     # Classify audio
     sound_label, confidence = classify_audio(file_path)
+    print(f"confidence {confidence}")
     
     # Processing results
     if confidence > confidence_threshold:
         print(f"Detected Sound: {sound_label} with confidence: {confidence:.3f}")
+        return sound_label, confidence
         if sound_label in alerts:
             print(alerts[sound_label])
         else:
@@ -75,9 +77,8 @@ def process_audio_file(file_path, confidence_threshold=0.5):
     processing_time = (datetime.now() - start_time).total_seconds()
     print(f"\nProcessing time: {processing_time:.2f} seconds")
     
-    return sound_label, confidence
 
 
-if __name__ == "__main__":
-    file_path = "cryy.wav"
-    process_audio_file(file_path)
+# if __name__ == "__main__":
+#     file_path = "cryy.wav"
+#     process_audio_file(file_path)

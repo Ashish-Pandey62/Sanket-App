@@ -87,7 +87,7 @@ def load_audio_buffer_from_bin(file_path, dtype=np.float32):
 
 if __name__ == "__main__":
     # Path to the binary file containing raw audio buffer
-    buffer_file_path = "total_buffer.bin"  # Replace with the actual file path
+    buffer_file_path = "output_audio.bin"  # Replace with the actual file path
     sample_rate = 16000  # Specify the sample rate of the saved buffer (update if necessary)
     
     # Load the audio buffer from temp.bin
