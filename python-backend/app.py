@@ -4,7 +4,15 @@ import wave
 import os
 import optm_tfhub
 from uuid import uuid4
+from threading import Thread, Lock
+from queue import Queue, Empty
+import logging
+import time
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+
+# Helper function to generate unique temporary file paths
 def get_temp_file_path():
     return f"./media/{uuid4().hex}.wav"
 
@@ -12,7 +20,9 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-total_buffer = []
+chunk_queue = Queue()  # Queue for incoming audio chunks
+processing = False  # Flag to indicate if processing is active
+processing_lock = Lock()  # Lock for concurrency
 
 @app.route("/", methods=["GET"])
 def home():
@@ -20,43 +30,49 @@ def home():
 
 @socketio.on("storeChunk")
 def handle_store_chunk(buffer):
-    global total_buffer
     if buffer:
-        total_buffer.append(buffer)
-        # print(f"Received chunk. Current buffer size: {len(total_buffer)}")
+        chunk_queue.put(buffer)  # Add the chunk to the queue
+        logging.info(f"Received chunk. Queue size: {chunk_queue.qsize()}")
 
-        total_samples = len(total_buffer)
-        # print(f"length of total samples: {total_samples}")
-        if total_samples > 75:
-            # print("Buffer reached 3 seconds, processing...")
-            transcription = transcribe_audio()
-            socketio.emit("transcription", {"text": transcription})
-            total_buffer.clear()
+# Background worker thread to process the queue
+def process_queue():
+    global processing
+    while True:
+        try:
+            # Collect chunks from the queue into a buffer
+            buffer = []
+            for _ in range(25):  # Process in batches of 25 chunks
+                chunk = chunk_queue.get(timeout=1)  # Wait for a chunk
+                buffer.append(chunk)
+            
+            # Process the collected buffer
+            if buffer:
+                single_buffer = b"".join(buffer)
+                process_audio(single_buffer)
 
-def transcribe_audio():
-    global total_buffer
-    try: 
-        single_buffer = b"".join(total_buffer)
+        except Empty:
+            # No chunks available, wait briefly before checking again
+            time.sleep(0.1)
 
+def process_audio(single_buffer):
+    try:
+        logging.info("Starting audio processing...")
         file_path = get_temp_file_path()
         save_as_wav(single_buffer, file_path)
-        
+        logging.info(f"Temporary file created: {file_path}")
+
         sound_label, confidence = optm_tfhub.process_audio_file(file_path)
-        if sound_label and confidence:
+        if sound_label != "no sound detected" and confidence:
             socketio.emit("alert", {"sound_label": sound_label})
-            
-        # print(f"Detected Sound: {sound_label} with confidence: {confidence:.3f}")
-        transcription = "some random text that will be provided by the model"
+            logging.info(f"Detected Sound: {sound_label} with confidence: {confidence:.3f}")
 
-        # if os.path.exists(file_path):
-        #     os.remove(file_path)
-            # print(f"Deleted temporary file: {file_path}")
-
-        return transcription
+        # Delete the temporary file after processing
+        if os.path.exists(file_path):
+            os.remove(file_path)
+            logging.info(f"Deleted temporary file: {file_path}")
 
     except Exception as e:
-        print(f"Error transcibing audio: {e}", exec_info=True)
-        return "Error during transcription"
+        logging.error(f"Error processing audio: {e}", exc_info=True)
 
 def save_as_wav(buffer, file_path):
     sample_rate = 16000  # Sample rate in Hz
@@ -73,10 +89,14 @@ def save_as_wav(buffer, file_path):
 
 @socketio.on("wakeWord")
 def handle_wake_word():
-    print("Heard wake word...")
+    logging.info("Heard wake word...")
     socketio.emit("vibrate")
 
 if __name__ == "__main__":
+    # Start the background worker
+    worker_thread = Thread(target=process_queue, daemon=True)
+    worker_thread.start()
+
     port = 3000
-    print(f"Server running on http://localhost:{port}")
+    logging.info(f"Server running on http://localhost:{port}")
     socketio.run(app, host="0.0.0.0", port=port)
