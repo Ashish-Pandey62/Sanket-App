@@ -11,6 +11,7 @@ import { requestNotificationPermission } from "@/utils/permissions";
 import {
   initializeNotifications,
   triggerNotification,
+  triggerQuickVibration,
   triggerVibration,
 } from "@/utils/notifications";
 import { initializeAudioRecorder } from "@/utils/audio";
@@ -31,6 +32,7 @@ interface ServerToClient {
 
 interface ClientToServer {
   storeChunk: (buffer: Buffer) => void;
+  // storeChunk: ({audioBuffer, isRecording}: {audioBuffer: Buffer, isRecording: boolean}) => void;
   wakeWord: () => void;
 }
 
@@ -73,16 +75,15 @@ export default function RootLayout() {
       if (sound_label === "fireAlarm"){
         triggerNotification({title: "Fire alarm!", body: "There is an alarm ringing!"});
 
-        const vibrationTime = 500
         setIsVibrating(true)
-        triggerVibration({ duration: vibrationTime, repeat: true });
+        triggerVibration({ duration: 500, repeat: true });
 
       } else if (sound_label === "infantCrying") {
 
         triggerNotification({title: "Infant Crying", body: "An infant crying sound is detected!"});
         const vibrationTime = 1000
         setIsVibrating(true)
-        triggerVibration({ duration: vibrationTime });
+        triggerQuickVibration({ duration: vibrationTime });
         setTimeout(() => setIsVibrating(false), vibrationTime);
 
       } else if (sound_label === "petSound") {
@@ -91,7 +92,7 @@ export default function RootLayout() {
 
         const vibrationTime = 1000
         setIsVibrating(true)
-        triggerVibration({ duration: vibrationTime });
+        triggerQuickVibration({ duration: vibrationTime });
         setTimeout(() => setIsVibrating(false), vibrationTime);
         
       } else if (sound_label === "doorBell") {
@@ -100,7 +101,7 @@ export default function RootLayout() {
 
         const vibrationTime = 1000
         setIsVibrating(true)
-        triggerVibration({ duration: vibrationTime });
+        triggerQuickVibration({ duration: vibrationTime });
         setTimeout(() => setIsVibrating(false), vibrationTime);
 
       }

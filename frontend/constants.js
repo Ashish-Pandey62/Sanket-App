@@ -21,6 +21,9 @@ export const alerts = [
         totalAlerts: 0,
         active: true,
         icon: avatar_male,
+        alertKey: "Wake Word",
+        alertDescription: "Someone is trying to reach out to you! Look around!",
+        alertTitle: "Someone called you"
     },
     {
         id: 2,
@@ -29,6 +32,9 @@ export const alerts = [
         totalAlerts: 0,
         active: true,
         icon: emergency,
+        alertKey: "fireAlarm",
+        alertDescription: "There is an alarm ringing!",
+        alertTitle: "Fire alarm!"
     },
     {
         id: 3,
@@ -37,6 +43,9 @@ export const alerts = [
         totalAlerts: 0,
         active: true,
         icon: infant,
+        alertKey: "infantCrying",
+        alertDescription: "An infant might be crying around you",
+        alertTitle: "Infant Crying"
     },
     {
         id: 4,
@@ -45,6 +54,9 @@ export const alerts = [
         totalAlerts: 0,
         active: true,
         icon: doorbell,
+        alertKey: "doorBell",
+        alertDescription: "Some one is at you door!",
+        alertTitle: "Doorbell Alert!"
     },
     {
         id: 5,
@@ -53,5 +65,8 @@ export const alerts = [
         totalAlerts: 0,
         active: true,
         icon: pet,
+        alertKey: "petSound",
+        alertDescription: "Your pet might be calling for you.",
+        alertTitle: "Pet Sound"
     }
 ];
