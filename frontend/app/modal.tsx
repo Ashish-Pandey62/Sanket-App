@@ -1,14 +1,24 @@
-import { View, Text, Pressable, Image, StyleSheet } from "react-native"
+import { View, Text, Pressable, Image, StyleSheet, Vibration } from "react-native"
 import { icons } from "@/constants";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import AlertCancelButton from "@/components/AlertCancelButton";
+import { useAppContext } from "@/providers/appContext";
 const ModalScreen = () => {
+    const { isVibrating, setIsVibrating } = useAppContext()
+
+    const closeModal = () => {
+        if (isVibrating){
+            setIsVibrating(false)
+            Vibration.cancel()
+        }
+
+        router.back()
+    }
+
     return (
         <Pressable
-            onPress={() => {
-                router.back();
-            }}
+            onPress={closeModal}
             className="flex-1 my-auto p-3 justify-center items-center"
         >
             <View className="w-4/5 h-1/3 justify-center items-center bg-white rounded-md flex-col">
@@ -25,8 +35,7 @@ const ModalScreen = () => {
                 </View>
                 <View className="flex-col flex-1 items-center justify-center">
                     <Ionicons name="warning" size={80} color={'orange'} />
-                    <AlertCancelButton onPress={()=>{router.back();
-                    }}/>
+                    <AlertCancelButton onPress={closeModal}/>
                 </View>
             </View>
         </Pressable>

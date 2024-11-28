@@ -8,6 +8,8 @@ type Voice = {
   gender: Gender;
 };
 
+export type AlertKeys = "fireAlarm" | "infantCrying" | "doorBell" | "petSound" | "NoModel"
+
 const AppContext = createContext<{
   isRecording: boolean;
   setIsRecording: React.Dispatch<React.SetStateAction<boolean>>;
@@ -17,6 +19,8 @@ const AppContext = createContext<{
   setAlertEnabled: React.Dispatch<React.SetStateAction<boolean[]>>;
   isVibrating: boolean;
   setIsVibrating: React.Dispatch<React.SetStateAction<boolean>>;
+  modelKey: AlertKeys;
+  setModelKey: React.Dispatch<React.SetStateAction<AlertKeys>>;
 }>({
   isRecording: false,
   setIsRecording: () => {},
@@ -26,7 +30,11 @@ const AppContext = createContext<{
   setAlertEnabled: () => {},
   isVibrating: true,
   setIsVibrating: () => {},
+  modelKey: "NoModel",
+  setModelKey: () => {},
 });
+
+
 
 const AppProvider: React.FC<PropsWithChildren> = ({ children }) => {
   // const [checkedAlerts, setCheckedAlerts] = useState<boolean[]>([true, true, true, true, true, true])
@@ -36,6 +44,7 @@ const AppProvider: React.FC<PropsWithChildren> = ({ children }) => {
     new Array(5).fill(true)
   );
   const [isVibrating, setIsVibrating] = useState<boolean>(false);
+  const [modelKey, setModelKey] = useState<AlertKeys>("NoModel")
 
   return (
     <AppContext.Provider
@@ -48,6 +57,8 @@ const AppProvider: React.FC<PropsWithChildren> = ({ children }) => {
         setAlertEnabled,
         isVibrating,
         setIsVibrating,
+        modelKey,
+        setModelKey
       }}
     >
       {children}

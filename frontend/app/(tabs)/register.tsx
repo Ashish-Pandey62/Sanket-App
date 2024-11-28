@@ -17,6 +17,8 @@ import { useState } from "react";
 import { useAppContext } from "@/providers/appContext";
 import { startRecordingAudio, stopRecordingAudio } from "@/utils/audio";
 import { Gender } from "@/providers/appContext";
+import { router } from "expo-router";
+import { triggerVibration } from "@/utils/notifications";
 
 const RegisterScreen = () => {
   const [recording, setRecording] = useState<boolean>(false);
@@ -30,7 +32,7 @@ const RegisterScreen = () => {
     gender: Gender
   ) => {
     if (!haveAudio) {
-      ToastAndroid.show("You haven't Recorded an Voice", ToastAndroid.SHORT)
+      ToastAndroid.show("You haven't Recorded an Voice", ToastAndroid.SHORT);
       return;
     }
 
@@ -78,9 +80,10 @@ const RegisterScreen = () => {
               handleRecordStop();
             }}
             // onPress={() => {
-            //   setIsVibrating(true)
-            //   triggerVibration({ duration: 500, repeat: true })
-            //   router.push("/modal")
+            //   const vibrationTime = 500;
+            //   setIsVibrating(true);
+            //   triggerVibration({ duration: vibrationTime, repeat: true });
+            //   router.push("/modal");
             // }}
             className={`mt-5 justify-start items-center self-center border-[12px] ${
               recording ? "border-primary" : "border-secondary/60"
