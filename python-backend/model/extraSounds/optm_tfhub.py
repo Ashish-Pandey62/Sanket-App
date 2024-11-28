@@ -16,6 +16,7 @@ relevant_classes = {
     "baby cry": 20,
     "siren": 318,
     "doorbell": 349,
+    "pets":68
 }
 
 # this is the Function to process audio and predict
