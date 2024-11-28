@@ -16,6 +16,7 @@ relevant_classes = {
     "baby cry": 20,
     "siren": 318,
     "doorbell": 349,
+    "pets":68
 }
 
 # this is the Function to process audio and predict
@@ -55,6 +56,8 @@ alerts = {
     "baby cry": "Baby is crying! Alerting user...",
     "siren": "Emergency siren detected!",
     "doorbell": "Someone is at the door!",
+    "pets": "Pets are making noise!"
+
 }
 
 def process_audio_file(file_path, confidence_threshold=0.5):
