@@ -53,10 +53,10 @@ def classify_audio(file_path, max_duration=5):
 
 # Alerting the user
 alerts = {
-    "baby cry": "Baby is crying! Alerting user...",
-    "siren": "Emergency siren detected!",
-    "doorbell": "Someone is at the door!",
-    "pets": "Pets are making noise!"
+    "baby cry": "infantCrying",
+    "siren": "fireAlarm",
+    "doorbell": "doorBell",
+    "pets": "petSound"
 }
 
 def process_audio_file(file_path, confidence_threshold=0.5):
@@ -69,7 +69,7 @@ def process_audio_file(file_path, confidence_threshold=0.5):
     # Processing results
     if confidence > confidence_threshold:
         print(f"Detected Sound: {sound_label} with confidence: {confidence:.3f}")
-        return sound_label, confidence
+        return alerts[sound_label], confidence
         if sound_label in alerts:
             print(alerts[sound_label])
         else:
@@ -78,7 +78,7 @@ def process_audio_file(file_path, confidence_threshold=0.5):
     # timingggg
     processing_time = (datetime.now() - start_time).total_seconds()
     print(f"\nProcessing time: {processing_time:.2f} seconds")
-    
+    return "no sound detected", False
 
 
 # if __name__ == "__main__":
