@@ -5,40 +5,49 @@ import datetime
 start = datetime.datetime.now()
 model = whisper.load_model("base")
 
-def run_wakeword(file_path):
-    result = model.transcribe(file_path) 
+wake_words_mapping = {
+    "dai": ["die"," dai"],
+    "bhai": ["thai", "bye"],
+    "didi" : ["Диди", "did"],
+    "uncle" : ["अंकल"]
+}
+
+def wakeword_detection(file_path):
+    result = model.transcribe(file_path)
 
     print("Transcription:")
     print(result["text"])
 
+    # Remove punctuation 
     transcription_without_punctuation = result["text"].translate(str.maketrans('', '', string.punctuation))
-    list_of_words = transcription_without_punctuation.split()
+    transcription_list = transcription_without_punctuation.split()
 
-    return list_of_words
-    # wake_word = "sunoram"
+    # checkking the wake words
+    matched_keys = find_matching_keys(wake_words_mapping, transcription_list)
 
-    # wake_word_list = wake_word.lower().split()
-
-    # if is_wake_word_detected(wake_word_list, list_of_words):
-    #     print(f"'{wake_word}' detected!")
-    # else:
-    #     print(f"'{wake_word}' was not detected!")
+    # returingn the match words
+    print("Matched Keys:", matched_keys)
 
     end = datetime.datetime.now()
-    print("Time taken:", (end-start).total_seconds(), "seconds")
+    # print("Time taken:", (end-start).total_seconds(), "seconds")
 
-def is_wake_word_detected(wake_word_list, transcription_list):
-    transcription_lower = [word.lower() for word in transcription_list]
-    try:
-        start_index = transcription_lower.index(wake_word_list[0])
-        for i in range(len(wake_word_list)):
-            if transcription_lower[start_index + i] != wake_word_list[i]:
-                return False
-        return True
-    except ValueError:
-        return False  
+    if len(matched_keys)>0:
+         return matched_keys[0]
+    else:
+        return None
 
+def find_matching_keys(wake_words_mapping, transcription_list):
+    transcription_lower = [word.lower().strip() for word in transcription_list]
+    print(transcription_lower)
+    matched_keys = []
+
+    for key, wake_words in wake_words_mapping.items():
+        for wake_word in wake_words:
+            if wake_word.strip() in transcription_lower:
+                matched_keys.append(wake_word.strip())
+                break
+
+    return matched_keys
 
 if __name__ == "__main__":
-    run_wakeword("suna_ram.m4a")
-
+    wakeword_detection("./test_audio/dai.m4a")

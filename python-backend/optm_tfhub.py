@@ -64,7 +64,7 @@ def process_audio_file(file_path, confidence_threshold=0.25):
     
     # Classify audio
     sound_label, confidence = classify_audio(file_path)
-    print(f"confidence {confidence}")
+    print(f"confidence {confidence} for {sound_label}")
     
     # Processing results
     if confidence > confidence_threshold:
