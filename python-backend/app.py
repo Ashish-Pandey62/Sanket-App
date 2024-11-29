@@ -145,7 +145,7 @@ def handle_store_chunk(buffer):
     global picovoice_test
     if buffer:
         chunk_queue.put(buffer)  # Add the chunk to the queue
-        print(f"handle_store_chunk: {wake_word_detected} {len(picovoice_test)}")
+        # print(f"handle_store_chunk: {wake_word_detected} {len(picovoice_test)}")
         if not wake_word_detected:
             if len(picovoice_test) < 25:
                 picovoice_test.append(buffer)
@@ -206,7 +206,8 @@ def handle_store_wake_word():
     save_as_wav(single_buffer, file_name_with_path)
     try:
         best_match = recongnizer(file_name_with_path)
-        socketio.emit("callerName", {"caller": (best_match.split("_")[0]).split(":")[1]})
+        if float(best_match.split(":")[2]) >= 0.89:
+            socketio.emit("callerName", {"caller": (best_match.split("_")[0]).split(":")[1]})
     except Exception as e:
         logging.error(f"Error calling the recongizer: {e}", exc_info=True)
     finally:

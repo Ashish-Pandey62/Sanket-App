@@ -28,7 +28,8 @@ def recongnizer(file_name):
 
     # Find the best match based on similarity score
     best_match = max(similarities.items(), key=lambda x: x[1])
-    
+    for name, confidence in similarities.items():
+        print(f"{name}: {confidence:.3f}")
     # Print the best match and its confidence (similarity score)
     print(f"Best Match: {best_match[0]} with confidence: {best_match[1]}")
 
@@ -63,6 +64,7 @@ def feed_db_with_enrollment():
             database[speaker_id] = speaker_model.encode_batch(load_audio(give_path(filename)))
 
     print(f"Database populated with {len(database)} speakers.") 
+    
 
 if __name__ == "__main__":
-    recongnizer("Ashish_long_Male.wav")
+    recongnizer("darshan_bolyo.wav")
