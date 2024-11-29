@@ -15,11 +15,11 @@ def load_audio(file_path):
 
 database = {
     "Ashish": speaker_model.encode_batch(load_audio("test3.wav")),
-    "Ram": speaker_model.encode_batch(load_audio("test.wav")),
+    "Mark": speaker_model.encode_batch(load_audio("test.wav")),
 }
 
 
-new_audio_embedding = speaker_model.encode_batch(load_audio("test2.wav"))
+new_audio_embedding = speaker_model.encode_batch(load_audio("mark2.wav"))
 
 
 similarities = {
