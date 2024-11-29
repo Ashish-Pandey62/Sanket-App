@@ -14,7 +14,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 
 const AlertItems: React.FC<{ isHome: boolean }> = ({ isHome }) => {
-  const { alertEnabled, setAlertEnabled } = useAppContext();
+  const { alertEnabled, setAlertEnabled, totalAlertCounts } = useAppContext();
 
   return (
     <FlatList
@@ -34,7 +34,7 @@ const AlertItems: React.FC<{ isHome: boolean }> = ({ isHome }) => {
               <Text className="text-lg font-semibold">{alert.title}</Text>
               <Text className="text-gray-500 text-sm">{alert.description}</Text>
               <View className="rounded-2xl bg-gray-100 self-start">
-                <Text className="text-sm text-gray-600 pl-1 pr-1">{`${alert.totalAlerts} Alerts today`}</Text>
+                <Text className="text-sm text-gray-600 pl-1 pr-1">{`${totalAlertCounts[index]} Alerts today`}</Text>
               </View>
             </View>
             <Pressable

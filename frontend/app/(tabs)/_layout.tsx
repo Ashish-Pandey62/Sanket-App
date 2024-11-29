@@ -24,11 +24,16 @@ import { ToastAndroid } from "react-native";
 export default function RootLayout() {
   //All setup related code goes here..............................
 
-  const { setIsVibrating, setModelKey, isStoring, alertEnabled, socket } =
+  const { setIsVibrating, setModelKey, isStoring, alertEnabled, socket, setTotalAlertCounts } =
     useAppContext();
 
   const alertHandler = async ({ sound_label }: { sound_label: AlertKeys }) => {
     if (sound_label === "fireAlarm" && alertEnabled[1]) {
+      setTotalAlertCounts((prev)=>{
+        const newArr = [...prev]
+        newArr[1] +=1
+        return newArr
+      })
       triggerNotification({
         title: "Fire alarm!",
         body: "There is an alarm ringing!",
@@ -39,6 +44,11 @@ export default function RootLayout() {
 
       router.push("/modal");
     } else if (sound_label === "infantCrying" && alertEnabled[2]) {
+      setTotalAlertCounts((prev)=>{
+        const newArr = [...prev]
+        newArr[2] +=1
+        return newArr
+      })
       triggerNotification({
         title: "Infant Crying",
         body: "An infant crying sound is detected!",
@@ -50,6 +60,11 @@ export default function RootLayout() {
 
       router.push("/modal");
     } else if (sound_label === "petSound" && alertEnabled[4]) {
+      setTotalAlertCounts((prev)=>{
+        const newArr = [...prev]
+        newArr[4] +=1
+        return newArr
+      })
       triggerNotification({
         title: "Pet Sound",
         body: "A pet is making some sound",
@@ -62,6 +77,11 @@ export default function RootLayout() {
 
       router.push("/modal");
     } else if (sound_label === "doorBell" && alertEnabled[3]) {
+      setTotalAlertCounts((prev)=>{
+        const newArr = [...prev]
+        newArr[3] +=1
+        return newArr
+      })
       triggerNotification({
         title: "Ding Dong!",
         body: "Some one is at your door",
@@ -152,13 +172,22 @@ export default function RootLayout() {
   //All setup related code ends here..............................
 
   const detectionCallback = async (keywordIndex: number) => {
-    // socket.emit("wakeWord");
+    socket.emit("wakeWord");
 
     console.log("Pico voice detected the word!")
     triggerNotification({ title: "Pico detected Wake Word", body: "A wake word has been detected!" })
-    // setIsVibrating(true);
-    triggerQuickVibration({ duration: 1000 })
-    // router.push("/modal");
+    
+    const vibrationTime = 1000
+    setIsVibrating(true);
+    triggerQuickVibration({ duration: vibrationTime })
+    setTimeout(() => setIsVibrating(false), vibrationTime)
+    setModelKey("nameAlert")
+    setTotalAlertCounts((prev)=>{
+      const newArr = [...prev]
+      newArr[0] +=1
+      return newArr
+    })
+    router.push("/modal");
   };
 
   return (

@@ -9,7 +9,7 @@ type Voice = {
   gender: Gender;
 };
 
-export type AlertKeys = "fireAlarm" | "infantCrying" | "doorBell" | "petSound" | "NoModel"
+export type AlertKeys = "fireAlarm" | "infantCrying" | "doorBell" | "petSound" | "nameAlert" | "NoModel"
 
 // WebSocket related code goes here............................
 
@@ -48,6 +48,8 @@ const AppContext = createContext<{
   socket: Socket<ServerToClient, ClientToServer>;
   gender: Gender;
   setGender: React.Dispatch<React.SetStateAction<Gender>>;
+  totalAlertCounts: number[]
+  setTotalAlertCounts: React.Dispatch<React.SetStateAction<number[]>>
 }>({
   isRecording: false,
   setIsRecording: () => {},
@@ -64,6 +66,8 @@ const AppContext = createContext<{
   socket,
   gender: "Undisclosed",
   setGender: () => {},
+  totalAlertCounts: [],
+  setTotalAlertCounts: ()=>{}
 });
 
 
@@ -78,6 +82,7 @@ const AppProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [modelKey, setModelKey] = useState<AlertKeys>("NoModel");
   const [isStoring, setIsStoring] = useState<boolean>(false);
   const [gender, setGender] = useState<Gender>("Undisclosed");
+  const [totalAlertCounts, setTotalAlertCounts] = useState<number[]>(new Array(5).fill(0))
 
   useEffect(() => {
     const getDataFromBackend = async () => {
@@ -113,7 +118,9 @@ const AppProvider: React.FC<PropsWithChildren> = ({ children }) => {
         setIsStoring,
         socket,
         gender,
-        setGender
+        setGender,
+        totalAlertCounts,
+        setTotalAlertCounts,
       }}
     >
       {children}
