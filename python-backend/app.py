@@ -10,7 +10,7 @@ import logging
 import time
 import base64
 from model.wakeWord2.main import wakeword_detection
-
+from model.speaker_recogn.main import recongnizer
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -137,17 +137,24 @@ def get_sound():
         logging.error(f"Error retrieving user audio: {e}")
         return jsonify({"error": "Failed to retrieve audio file"}), 500
 
+wake_word_detected = False
+
 @socketio.on("storeChunk")
 def handle_store_chunk(buffer):
+    global wake_word_detected
     global picovoice_test
     if buffer:
         chunk_queue.put(buffer)  # Add the chunk to the queue
-        # wakeword_queue.put(buffer) # Add the chunk to wakeword_queue
-        if len(picovoice_test) < 25:
-            picovoice_test.append(buffer)
-        else:
-            picovoice_test = picovoice_test[-24:]
-            picovoice_test.append(buffer)
+        print(f"handle_store_chunk: {wake_word_detected} {len(picovoice_test)}")
+        if not wake_word_detected:
+            if len(picovoice_test) < 25:
+                picovoice_test.append(buffer)
+            else:
+                picovoice_test = picovoice_test[-24:]
+                picovoice_test.append(buffer)
+        else:  # When wake_word_detected is True
+            if len(picovoice_test) < 100:
+                picovoice_test.append(buffer)
         logging.info(f"Received chunk. Queue size: {chunk_queue.qsize()}")
 
 @socketio.on("storeThis")
@@ -169,11 +176,42 @@ def handle_user_label(data): # data -> {firstName, lastName, gender}
 
 @socketio.on("wakeWord")
 def handle_wake_word_heard():
+    global wake_word_detected
+    wake_word_detected = True
+    
+
+    # wake_word_detected = True
+
+    # while len(picovoice_test) < 100:
+    #         time.sleep(0.1)
+
+    # if len(picovoice_test) >= 100:
+    #     single_buffer = b"".join(picovoice_test)
+    #     file_name_with_path = f"/home/gyaneshwar/programming/hackathon/Sanket-App/python-backend/model/speaker_recogn/{uuid4().hex}.wav"
+    #     save_as_wav(single_buffer, file_name_with_path)
+    #     try:
+    #         best_match = recongnizer(file_name_with_path)
+    #         socketio.emit("callerName", {"caller": (best_match.split("_")[0]).split(":")[1]})
+    #     except Exception as e:
+    #         logging.error(f"Error calling the recongizer: {e}", exc_info=True)
+    #     finally:
+    #         picovoice_test.clear()
+
+@socketio.on("wakeWord2")
+def handle_store_wake_word():
+    global wake_word_detected
+    print(f"received wakeWord2")
     single_buffer = b"".join(picovoice_test)
+    file_name_with_path = f"/home/gyaneshwar/programming/hackathon/Sanket-App/python-backend/model/speaker_recogn/{uuid4().hex}.wav"
+    save_as_wav(single_buffer, file_name_with_path)
     try:
-        save_as_wav(single_buffer, "./temp.wav")
+        best_match = recongnizer(file_name_with_path)
+        socketio.emit("callerName", {"caller": (best_match.split("_")[0]).split(":")[1]})
     except Exception as e:
-        logging.error(f"Error saving audio for picotest: {e}", exc_info=True)
+        logging.error(f"Error calling the recongizer: {e}", exc_info=True)
+    finally:
+        picovoice_test.clear()
+        wake_word_detected = False
 
 
 # Background worker thread to process the queue
