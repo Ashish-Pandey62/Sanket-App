@@ -1,7 +1,9 @@
-import React from "react";
-import { View, Text, Image, Switch } from "react-native";
+import React, { useEffect } from "react";
+import { View, Text, Image } from "react-native";
 import MicSwitch from "./MicSwitch";
 import { usePathname } from "expo-router";
+import { icons } from "@/constants";
+import { useAppContext } from "@/providers/appContext";
 
 interface HeaderBoxProps {
   title: string;
@@ -10,6 +12,9 @@ interface HeaderBoxProps {
 
 const HeaderBox: React.FC<HeaderBoxProps> = ({ title, paragraph }) => {
   const path = usePathname();
+
+  const { gender } = useAppContext()
+
 
   return (
     <View className="flex flex-col p-4 bg-purple-400 w-full rounded-b-3xl">
@@ -29,7 +34,7 @@ const HeaderBox: React.FC<HeaderBoxProps> = ({ title, paragraph }) => {
         </View>
         <View>
           <Image
-            source={require("@/assets/icons/avatar_male.png")}
+            source={gender === "Male" ? icons.avatar_male : gender === "Female" ? icons.avatar_female : icons.undisclosed}
             style={{ width: 50, height: 50 }}
           />
         </View>

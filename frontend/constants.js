@@ -5,8 +5,10 @@ import ear from "./assets/icons/ear.png"
 import emergency from "./assets/icons/emergency.png"
 import man from "./assets/icons/man.png"
 import pet from "./assets/icons/pet.png"
+import avatar_female from "./assets/icons/avatar_female.png"
+import undisclosed from "./assets/icons/undisclosed.png"
 
-export const icons =  { infant, avatar_male, doorbell, ear, emergency, man, pet };
+export const icons =  { infant, avatar_male, doorbell, ear, emergency, man, pet, avatar_female, undisclosed };
 
 export const alerts = [
     {
@@ -16,7 +18,7 @@ export const alerts = [
         totalAlerts: 0,
         active: true,
         icon: avatar_male,
-        alertKey: "Wake Word",
+        alertKey: "",
         alertDescription: "Someone is trying to reach out to you! Look around!",
         alertTitle: "Someone called you"
     },

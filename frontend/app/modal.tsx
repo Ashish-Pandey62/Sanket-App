@@ -35,7 +35,7 @@ const ModalScreen = () => {
       className="flex-1 my-auto p-3 justify-center items-center"
     >
       <View className="w-4/5 h-1/3 justify-center items-center bg-white rounded-md flex-col">
-        <View className="flex-row flex-2 items-center justify-around pt-5">
+        <View className="flex-row gap-4 flex-2 items-center justify-around pt-5">
           <View>
             <Image source={currentAlert.icon} style={styles.image} />
           </View>
@@ -48,8 +48,8 @@ const ModalScreen = () => {
             </Text>
           </View>
         </View>
-        <View className="flex-col flex-1 items-center justify-center">
-          <Ionicons name="warning" size={80} color={"orange"} />
+        <View className="flex-col gap-4 flex-1 items-center justify-center">
+          <Ionicons name="warning" size={100} color={"orange"} />
           <AlertCancelButton onPress={closeModal} />
         </View>
       </View>

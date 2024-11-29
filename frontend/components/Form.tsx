@@ -89,14 +89,14 @@ const Form: React.FC<{
             });
           }}
           className={`p-2 rounded-xl ${
-            gender === "Male" ? "elevation-lg bg-purple-400" : ""
+            gender === "Male" ? "elevation-lg bg-purple-400" : "border-2 border-gray-500/10"
           }`}
         >
-          <Ionicons name="man" size={30} />
+          <Ionicons name="male-outline" size={30} color={gender === "Male" ? "white" : "blue"} />
         </Pressable>
         <Pressable
           className={` p-2 rounded-xl ${
-            gender === "Female" ? "elevation-lg bg-purple-400" : ""
+            gender === "Female" ? "elevation-lg bg-purple-400" : "border-2 border-gray-500/10"
           }`}
           onPress={() => {
             setGender((prevState) => {
@@ -108,45 +108,48 @@ const Form: React.FC<{
             });
           }}
         >
-          <Ionicons name="woman" size={30} />
+          <Ionicons name="female-outline" size={30} color={gender === "Female" ? "white" : "#D52FEE"} />
         </Pressable>
       </View>
       <View className="self-end">
-        <CustomButton title="Complete" icon={"checkmark-sharp"} isTab={false}
-        disabled={
-          (firstNameIsTouched && firstName.trim() === "") ||
-          (lastNameIsTouched && lastName.trim() === "") ||
-          (ageIsTouched && age.trim() === "")
-        }
-        onPress={() => {
-          if (firstName.trim() === "" || lastName.trim() === "") {
-            setFirstNameIsTouched(true);
-            setLastNameIsTouched(true);
-            return;
+        <CustomButton
+          title="Complete"
+          icon={"checkmark-sharp"}
+          isTab={false}
+          disabled={
+            (firstNameIsTouched && firstName.trim() === "") ||
+            (lastNameIsTouched && lastName.trim() === "") ||
+            (ageIsTouched && age.trim() === "")
           }
-
-          if (!path.includes("register")) {
-            const isNotNumber = Number.isNaN(Number(age));
-
-            if (age.trim() === "" || isNotNumber) {
-              setAgeIsTouched(true);
-              if (isNotNumber) {
-                setAge("");
-              }
-
+          onPress={() => {
+            if (firstName.trim() === "" || lastName.trim() === "") {
+              setFirstNameIsTouched(true);
+              setLastNameIsTouched(true);
               return;
             }
-          }
 
-          handleSubmit(firstName, lastName, gender, Number(age));
-          setAgeIsTouched(false);
-          setFirstNameIsTouched(false);
-          setLastNameIsTouched(false);
-          setFirstName("");
-          setLastName("");
-          setGender("Undisclosed");
-          setAge("");
-        }}
+            if (!path.includes("register")) {
+              const isNotNumber = Number.isNaN(Number(age));
+
+              if (age.trim() === "" || isNotNumber) {
+                setAgeIsTouched(true);
+                if (isNotNumber) {
+                  setAge("");
+                }
+
+                return;
+              }
+            }
+
+            handleSubmit(firstName, lastName, gender, Number(age));
+            setAgeIsTouched(false);
+            setFirstNameIsTouched(false);
+            setLastNameIsTouched(false);
+            setFirstName("");
+            setLastName("");
+            setGender("Undisclosed");
+            setAge("");
+          }}
         />
       </View>
     </View>

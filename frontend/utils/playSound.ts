@@ -9,13 +9,13 @@ export const allowAudioPlaybackFromBackground = async () => {
     });
 }
 
-export const playARandomSound = async () => {
-    const { sound } = await Audio.Sound.createAsync({
-        uri: "https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3",
-    });
 
-    sound.playAsync();
-    console.log("The audio is playing...");
+export const playASound = async (urlEncodedData: string) => {
+    console.log("Playing a voice sent by the backend")
 
-    setTimeout(async () => await sound.stopAsync(), 5000);
+    await Audio.Sound.createAsync({
+        uri: `data:audio/wav;base64,${urlEncodedData}`,
+    },
+    { shouldPlay: true }
+    );
 }
