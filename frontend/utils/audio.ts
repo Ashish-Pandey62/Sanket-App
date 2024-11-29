@@ -12,6 +12,10 @@ export const initializeAudioRecorder = (dataHandler: (data: string) => void) => 
     AudioRecord.on("data", dataHandler)
 }
 
+export const updateAudioRecorder = (dataHandler: (data: string) => void) => {
+    AudioRecord.on("data", dataHandler)
+}
+
 export const startRecordingAudio = () => {
     AudioRecord.start()
 }

@@ -24,7 +24,7 @@ const RegisterScreen = () => {
   const [recording, setRecording] = useState<boolean>(false);
   const [haveAudio, setHaveAudio] = useState<boolean>(false);
 
-  const { isRecording, setVoices, setIsVibrating } = useAppContext();
+  const { isRecording, setVoices, setIsVibrating, setIsStoring, socket } = useAppContext();
 
   const handleSubmit = (
     firstName: string,
@@ -40,11 +40,12 @@ const RegisterScreen = () => {
 
     //Send the data to the Backend about who the recorded voice belongs to....
     setVoices((prevState) => [...prevState, { firstName, lastName, gender }]);
-    console.log(firstName, lastName, gender);
+    socket.emit("userLabel", { firstName, lastName, gender })
   };
 
   const handleRecordStart = () => {
     setRecording(true);
+    setIsStoring(true)
 
     if (!isRecording) {
       startRecordingAudio();
@@ -56,6 +57,7 @@ const RegisterScreen = () => {
 
   const handleRecordStop = async () => {
     setRecording(false);
+    setIsStoring(false)
 
     if (!isRecording) {
       await stopRecordingAudio();
@@ -83,7 +85,7 @@ const RegisterScreen = () => {
               // const vibrationTime = 500;
               // setIsVibrating(true);
               // triggerVibration({ duration: vibrationTime, repeat: true });
-              router.push("/modal");
+              // router.push("/modal");
             }}
             className={`mt-5 justify-start items-center self-center border-[12px] ${
               recording ? "border-primary" : "border-secondary/60"

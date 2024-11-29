@@ -14,14 +14,17 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import HeaderBox from "@/components/HeaderBox";
 
 export default function Index() {
-  const { setAlertEnabled } = useAppContext()
+  const { setAlertEnabled, setGender } = useAppContext()
 
   useEffect(() => {
     const checkIfRegistered = async () => {
       const firstName = await AsyncStorage.getItem("firstName");
-
+      
       if (firstName) {
         ToastAndroid.show(`Welcome Back, ${firstName}!`, ToastAndroid.SHORT);
+        const gender = await AsyncStorage.getItem("gender");
+        setGender(gender as any)
+        
 
         const myAlerts = new Array(5).fill(true)
         for (let i = 0; i < 5; i++){
@@ -59,6 +62,8 @@ export default function Index() {
       AsyncStorage.setItem("gender", gender),
       AsyncStorage.setItem("age", age.toString()),
     ]);
+
+    setGender(gender)
 
     router.replace("/(tabs)/home")
   };

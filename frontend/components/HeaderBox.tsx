@@ -1,7 +1,10 @@
-import React from "react";
-import { View, Text, Image, Switch } from "react-native";
+import React, { useEffect } from "react";
+import { View, Text, Image } from "react-native";
 import MicSwitch from "./MicSwitch";
 import { usePathname } from "expo-router";
+import { icons } from "@/constants";
+import { useAppContext } from "@/providers/appContext";
+import { StatusBar } from "expo-status-bar";
 
 interface HeaderBoxProps {
   title: string;
@@ -10,6 +13,8 @@ interface HeaderBoxProps {
 
 const HeaderBox: React.FC<HeaderBoxProps> = ({ title, paragraph }) => {
   const path = usePathname();
+
+  const { gender } = useAppContext();
 
   return (
     <View className="flex flex-col p-4 bg-purple-400 w-full rounded-b-3xl">
@@ -20,19 +25,27 @@ const HeaderBox: React.FC<HeaderBoxProps> = ({ title, paragraph }) => {
             <MicSwitch />
           </View>
         )}
-        <View className="flex flex-row justify-center align-center">
-          <Text className="text-white font-bold text-lg">Sanket</Text>
+        <View className="flex flex-row justify-center align-center gap-3 mx-auto">
+          <Text className="text-white font-caveatBold text-4xl">Sanket </Text>
           <Image
             source={require("@/assets/icons/ear.png")}
             style={{ width: 30, height: 30 }}
           />
         </View>
-        <View>
-          <Image
-            source={require("@/assets/icons/avatar_male.png")}
-            style={{ width: 50, height: 50 }}
-          />
-        </View>
+        {path !== "/" && (
+          <View>
+            <Image
+              source={
+                gender === "Male"
+                  ? icons.avatar_male
+                  : gender === "Female"
+                  ? icons.avatar_female
+                  : icons.undisclosed
+              }
+              style={{ width: 50, height: 50 }}
+            />
+          </View>
+        )}
       </View>
 
       {/* Second Column */}

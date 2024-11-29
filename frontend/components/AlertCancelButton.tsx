@@ -8,7 +8,7 @@ const AlertCancelButton: React.FC<{onPress: () => void}> = ({
 }) => {
   return (
     <Pressable onPress={onPress}>
-      <View className="bg-orange-400 px-4 py-2 rounded-lg">
+      <View className="bg-orange-400 px-6 py-2 rounded-lg">
         <Text className="text-lg font-semibold">Okay</Text>
       </View>
     </Pressable>
