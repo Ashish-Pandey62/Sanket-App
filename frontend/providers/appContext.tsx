@@ -17,12 +17,14 @@ interface ServerToClient {
   alert: ({ sound_label }: { sound_label: AlertKeys }) => void;
   enrollmentSuccess: () => void;
   wakeWord: ({ word }: { word: string }) => void;
+  callerName: ({ caller }: { caller: string }) => void;
 }
 
 interface ClientToServer {
   storeChunk: (buffer: Buffer) => void;
   storeThis: (buffer: Buffer) => void;
   wakeWord: () => void;
+  wakeWord2: () => void;
   userLabel: ({ firstName, lastName, gender }: { firstName: string, lastName: string, gender: Gender }) => void
 }
 
@@ -48,8 +50,10 @@ const AppContext = createContext<{
   socket: Socket<ServerToClient, ClientToServer>;
   gender: Gender;
   setGender: React.Dispatch<React.SetStateAction<Gender>>;
-  totalAlertCounts: number[]
-  setTotalAlertCounts: React.Dispatch<React.SetStateAction<number[]>>
+  totalAlertCounts: number[];
+  setTotalAlertCounts: React.Dispatch<React.SetStateAction<number[]>>;
+  callerFirstName: string;
+  setCallerFirstName: React.Dispatch<React.SetStateAction<string>>;
 }>({
   isRecording: false,
   setIsRecording: () => {},
@@ -67,7 +71,9 @@ const AppContext = createContext<{
   gender: "Undisclosed",
   setGender: () => {},
   totalAlertCounts: [],
-  setTotalAlertCounts: ()=>{}
+  setTotalAlertCounts: ()=>{},
+  callerFirstName: "Someone",
+  setCallerFirstName: () => {}
 });
 
 
@@ -83,6 +89,7 @@ const AppProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [isStoring, setIsStoring] = useState<boolean>(false);
   const [gender, setGender] = useState<Gender>("Undisclosed");
   const [totalAlertCounts, setTotalAlertCounts] = useState<number[]>(new Array(5).fill(0))
+  const [ callerFirstName, setCallerFirstName ] = useState<string>("Someone")
 
   useEffect(() => {
     const getDataFromBackend = async () => {
@@ -121,6 +128,8 @@ const AppProvider: React.FC<PropsWithChildren> = ({ children }) => {
         setGender,
         totalAlertCounts,
         setTotalAlertCounts,
+        callerFirstName,
+        setCallerFirstName,
       }}
     >
       {children}
