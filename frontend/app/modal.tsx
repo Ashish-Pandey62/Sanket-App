@@ -13,7 +13,7 @@ import AlertCancelButton from "@/components/AlertCancelButton";
 import { useAppContext } from "@/providers/appContext";
 
 const ModalScreen = () => {
-  const { isVibrating, setIsVibrating, modelKey, setIsRecording } =
+  const { isVibrating, setIsVibrating, modelKey } =
     useAppContext();
 
   const currentAlert = alerts.filter(
