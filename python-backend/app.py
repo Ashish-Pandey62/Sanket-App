@@ -30,6 +30,9 @@ processing = False  # Flag to indicate if processing is active
 processing_wakeword = False
 processing_lock = Lock()  # Lock for concurrency
 
+picovoice_test = []
+test_array_size = 25
+
 @app.route("/", methods=["GET"])
 def home():
     return jsonify("You have reached the server!"), 200
@@ -136,9 +139,15 @@ def get_sound():
 
 @socketio.on("storeChunk")
 def handle_store_chunk(buffer):
+    global picovoice_test
     if buffer:
         chunk_queue.put(buffer)  # Add the chunk to the queue
-        wakeword_queue.put(buffer) # Add the chunk to wakeword_queue
+        # wakeword_queue.put(buffer) # Add the chunk to wakeword_queue
+        if len(picovoice_test) < 25:
+            picovoice_test.append(buffer)
+        else:
+            picovoice_test = picovoice_test[-24:]
+            picovoice_test.append(buffer)
         logging.info(f"Received chunk. Queue size: {chunk_queue.qsize()}")
 
 @socketio.on("storeThis")
@@ -157,7 +166,15 @@ def handle_user_label(data): # data -> {firstName, lastName, gender}
         save_as_wav(single_buffer, f"./enrollment/{firstName}_{lastName}_{gender}.wav")
         socketio.emit("enrollmentSuccess")
         user_enrollment.clear()
-        
+
+@socketio.on("wakeWord")
+def handle_wake_word_heard():
+    single_buffer = b"".join(picovoice_test)
+    try:
+        save_as_wav(single_buffer, "./temp.wav")
+    except Exception as e:
+        logging.error(f"Error saving audio for picotest: {e}", exc_info=True)
+
 
 # Background worker thread to process the queue
 def process_queue():
@@ -180,35 +197,35 @@ def process_queue():
             time.sleep(0.1)
 
 # Background worker thread to process the wakeword queue
-def process_wakeword_queue():
-    global processing_wakeword
-    while True:
-        try:
-            # Collect chunks from the queue into a buffer
-            buffer = []
-            for _ in range(25):  # Process in batches of 25 chunks
-                wakeword_chunk = wakeword_queue.get(timeout=1)  # Wait for a chunk
-                buffer.append(wakeword_chunk)
+# def process_wakeword_queue():
+#     global processing_wakeword
+#     while True:
+#         try:
+#             # Collect chunks from the queue into a buffer
+#             buffer = []
+#             for _ in range(25):  # Process in batches of 25 chunks
+#                 wakeword_chunk = wakeword_queue.get(timeout=1)  # Wait for a chunk
+#                 buffer.append(wakeword_chunk)
             
-            # Process the collected buffer
-            if buffer:
-                single_buffer = b"".join(buffer)
-                file_path = get_temp_file_path()
-                save_as_wav(single_buffer, file_path)
-                logging.info(f"Temporary file created: {file_path}")
-                matched_key = wakeword_detection(file_path) # wakeword detection
-                logging.info(matched_key)
-                if matched_key!=None:
-                    socketio.emit("wakeWord", {"word":matched_key})
+#             # Process the collected buffer
+#             if buffer:
+#                 single_buffer = b"".join(buffer)
+#                 file_path = get_temp_file_path()
+#                 save_as_wav(single_buffer, file_path)
+#                 logging.info(f"Temporary file created: {file_path}")
+#                 matched_key = wakeword_detection(file_path) # wakeword detection
+#                 logging.info(matched_key)
+#                 if matched_key!=None:
+#                     socketio.emit("wakeWord", {"word":matched_key})
                     
-                # Delete the temporary file after processing
-                if os.path.exists(file_path):
-                    os.remove(file_path)
-                    logging.info(f"Deleted temporary file: {file_path}")
+#                 # Delete the temporary file after processing
+#                 if os.path.exists(file_path):
+#                     os.remove(file_path)
+#                     logging.info(f"Deleted temporary file: {file_path}")
 
-        except Empty:
-            # No chunks available, wait briefly before checking again
-            time.sleep(0.1)
+#         except Empty:
+#             # No chunks available, wait briefly before checking again
+#             time.sleep(0.1)
 
 def process_audio(single_buffer):
     try:
@@ -243,15 +260,10 @@ def save_as_wav(buffer, file_path):
         wf.setframerate(sample_rate)
         wf.writeframes(buffer)
 
-@socketio.on("wakeWord")
-def handle_wake_word():
-    logging.info("Heard wake word...")
-    socketio.emit("vibrate")
-
 if __name__ == "__main__":
-    # Start the background worker
+    # Start the background workers
     Thread(target=process_queue, daemon=True).start()
-    Thread(target=process_wakeword_queue, daemon=True).start()
+    # Thread(target=process_wakeword_queue, daemon=True).start()
 
     port = 3000
     logging.info(f"Server running on http://localhost:{port}")
