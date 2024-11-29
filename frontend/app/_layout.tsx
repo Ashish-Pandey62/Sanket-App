@@ -1,10 +1,37 @@
-import { Stack } from "expo-router";
+import { SplashScreen, Stack } from "expo-router";
 
 import "../global.css";
 import AppProvider from "@/providers/appContext";
 import { StatusBar } from "expo-status-bar";
 
+import { useFonts } from "expo-font";
+import { useLayoutEffect } from "react";
+
+SplashScreen.preventAutoHideAsync();
+
 const RootLayout = () => {
+  const [loaded, error] = useFonts({
+    "Caveat-Bold": require("../assets/fonts/Caveat/static/Caveat-Bold.ttf"),
+    "Caveat-Medium": require("../assets/fonts/Caveat/static/Caveat-Medium.ttf"),
+    "Caveat-Regular": require("../assets/fonts/Caveat/static/Caveat-Regular.ttf"),
+    "Caveat-SemiBold": require("../assets/fonts/Caveat/static/Caveat-SemiBold.ttf"),
+  });
+
+  useLayoutEffect(() => {
+    const showScreen = async () => {
+      await SplashScreen.hideAsync();
+    };
+
+    if (loaded) {
+      console.log("The fonts are loaded!")
+      showScreen();
+    }
+  }, [loaded]);
+
+  if (!loaded || error) {
+    return null;
+  }
+
   return (
     <AppProvider>
       <StatusBar style="dark" backgroundColor="#c084fc" />

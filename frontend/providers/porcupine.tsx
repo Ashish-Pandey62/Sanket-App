@@ -10,7 +10,7 @@ import {
   useEffect,
 } from "react";
 
-const ACCESS_KEY = "cTJW0z0/muADrS8/S6Kd1nL34MCdd6ubiNsDP1v9uegyLrhlIX8gIg==";
+const ACCESS_KEY = "bForeWqZekj3uaGLNtgNrKaIeGP6iriTOWb6lesVz3js66hioaO28w==";
 
 //The order of the word is DIRECTLY RELATED TO THE "keywordIndex" in the detectionCallback function
 const WAKE_WORDS = [

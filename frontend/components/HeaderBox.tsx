@@ -25,8 +25,8 @@ const HeaderBox: React.FC<HeaderBoxProps> = ({ title, paragraph }) => {
             <MicSwitch />
           </View>
         )}
-        <View className="flex flex-row justify-center align-center mx-auto">
-          <Text className="text-white font-bold text-lg">Sanket</Text>
+        <View className="flex flex-row justify-center align-center gap-3 mx-auto">
+          <Text className="text-white font-caveatBold text-4xl">Sanket </Text>
           <Image
             source={require("@/assets/icons/ear.png")}
             style={{ width: 30, height: 30 }}

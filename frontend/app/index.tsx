@@ -63,6 +63,8 @@ export default function Index() {
       AsyncStorage.setItem("age", age.toString()),
     ]);
 
+    setGender(gender)
+
     router.replace("/(tabs)/home")
   };
 

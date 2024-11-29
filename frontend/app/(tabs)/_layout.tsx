@@ -154,10 +154,11 @@ export default function RootLayout() {
   const detectionCallback = async (keywordIndex: number) => {
     // socket.emit("wakeWord");
 
-    const vibrationTime = 500;
-    setIsVibrating(true);
-    triggerVibration({ duration: vibrationTime, repeat: true });
-    router.push("/modal");
+    console.log("Pico voice detected the word!")
+    triggerNotification({ title: "Pico detected Wake Word", body: "A wake word has been detected!" })
+    // setIsVibrating(true);
+    triggerQuickVibration({ duration: 1000 })
+    // router.push("/modal");
   };
 
   return (

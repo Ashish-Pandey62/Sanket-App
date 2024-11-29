@@ -10,6 +10,12 @@ module.exports = {
           secondary: "#BFA4E7",
           bg_white: "#F0F0F0"
       },
+      fontFamily: {
+        caveatBold: ["Caveat-Bold", "sans-serif"],
+        caveatMedium: ["Caveat-Medium", "sans-serif"],
+        caveatRegular: ["Caveat-Regular", "sans-serif"],
+        caveatSemibold: ["Caveat-SemiBold", "sans-serif"],
+      },
     },
     plugins: [],
   }
