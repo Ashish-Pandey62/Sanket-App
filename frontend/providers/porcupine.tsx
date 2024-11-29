@@ -9,12 +9,13 @@ import {
   createContext,
   useEffect,
 } from "react";
+import { useAppContext } from "./appContext";
 
 const ACCESS_KEY = "bForeWqZekj3uaGLNtgNrKaIeGP6iriTOWb6lesVz3js66hioaO28w==";
 
 //The order of the word is DIRECTLY RELATED TO THE "keywordIndex" in the detectionCallback function
 const WAKE_WORDS = [
-  "सुन-राम_hi_android_v3_0_0.ppn",
+  // "सुन-राम_hi_android_v3_0_0.ppn",
   "अंकल_hi_android_v3_0_0.ppn",
   "आंटी-आंटी_hi_android_v3_0_0.ppn",
   "ओह-दाई_hi_android_v3_0_0.ppn",
@@ -59,6 +60,7 @@ const PorcupineProvider: React.FC<
   useEffect(() => {
     const setup = async () => {
       try {
+  
         const porcupineManager = await PorcupineManager.fromKeywordPaths(
           ACCESS_KEY,
           WAKE_WORDS,
@@ -88,6 +90,7 @@ const PorcupineProvider: React.FC<
     };
 
     setup();
+
   }, []);
 
   return (

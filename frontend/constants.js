@@ -19,8 +19,8 @@ export const alerts = [
         active: true,
         icon: avatar_male,
         alertKey: "nameAlert",
-        alertDescription: "Someone is trying to reach out to you! Look around!",
-        alertTitle: "Someone called you"
+        alertDescription: "Look around! Your attention is being seeked!",
+        alertTitle: "called you"
     },
     {
         id: 2,

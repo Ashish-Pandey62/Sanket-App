@@ -12,28 +12,34 @@ import {
   triggerVibration,
 } from "@/utils/notifications";
 import { initializeAudioRecorder, updateAudioRecorder } from "@/utils/audio";
-import {
-  allowAudioPlaybackFromBackground,
-} from "@/utils/playSound";
+import { allowAudioPlaybackFromBackground } from "@/utils/playSound";
 import MyTabBar from "@/components/MyTabBar";
 import TabBarButton from "@/components/TabBarButton";
 import { router } from "expo-router";
-import { useAppContext, AlertKeys, Gender } from "@/providers/appContext";
+import { useAppContext, AlertKeys } from "@/providers/appContext";
 import { ToastAndroid } from "react-native";
 
 export default function RootLayout() {
   //All setup related code goes here..............................
 
-  const { setIsVibrating, setModelKey, isStoring, alertEnabled, socket, setTotalAlertCounts } =
-    useAppContext();
+  const {
+    setIsVibrating,
+    setModelKey,
+    isStoring,
+    alertEnabled,
+    socket,
+    callerFirstName,
+    setTotalAlertCounts,
+    setCallerFirstName,
+  } = useAppContext();
 
   const alertHandler = async ({ sound_label }: { sound_label: AlertKeys }) => {
     if (sound_label === "fireAlarm" && alertEnabled[1]) {
-      setTotalAlertCounts((prev)=>{
-        const newArr = [...prev]
-        newArr[1] +=1
-        return newArr
-      })
+      setTotalAlertCounts((prev) => {
+        const newArr = [...prev];
+        newArr[1] += 1;
+        return newArr;
+      });
       triggerNotification({
         title: "Fire alarm!",
         body: "There is an alarm ringing!",
@@ -44,11 +50,11 @@ export default function RootLayout() {
 
       router.push("/modal");
     } else if (sound_label === "infantCrying" && alertEnabled[2]) {
-      setTotalAlertCounts((prev)=>{
-        const newArr = [...prev]
-        newArr[2] +=1
-        return newArr
-      })
+      setTotalAlertCounts((prev) => {
+        const newArr = [...prev];
+        newArr[2] += 1;
+        return newArr;
+      });
       triggerNotification({
         title: "Infant Crying",
         body: "An infant crying sound is detected!",
@@ -60,11 +66,11 @@ export default function RootLayout() {
 
       router.push("/modal");
     } else if (sound_label === "petSound" && alertEnabled[4]) {
-      setTotalAlertCounts((prev)=>{
-        const newArr = [...prev]
-        newArr[4] +=1
-        return newArr
-      })
+      setTotalAlertCounts((prev) => {
+        const newArr = [...prev];
+        newArr[4] += 1;
+        return newArr;
+      });
       triggerNotification({
         title: "Pet Sound",
         body: "A pet is making some sound",
@@ -77,11 +83,11 @@ export default function RootLayout() {
 
       router.push("/modal");
     } else if (sound_label === "doorBell" && alertEnabled[3]) {
-      setTotalAlertCounts((prev)=>{
-        const newArr = [...prev]
-        newArr[3] +=1
-        return newArr
-      })
+      setTotalAlertCounts((prev) => {
+        const newArr = [...prev];
+        newArr[3] += 1;
+        return newArr;
+      });
       triggerNotification({
         title: "Ding Dong!",
         body: "Some one is at your door",
@@ -112,8 +118,8 @@ export default function RootLayout() {
 
       // Sending the data to the backend continuously start here..................
 
-      if (isStoring){
-        socket.emit("storeThis", audioBuffer)
+      if (isStoring) {
+        socket.emit("storeThis", audioBuffer);
       } else {
         socket.emit("storeChunk", audioBuffer);
       }
@@ -122,17 +128,24 @@ export default function RootLayout() {
     });
 
     socket.on("enrollmentSuccess", () => {
-      ToastAndroid.show("User Registered Successfully!", ToastAndroid.SHORT)
-    })
+      ToastAndroid.show("User Registered Successfully!", ToastAndroid.SHORT);
+    });
+
+    socket.on("callerName", ({ caller }) => {
+      setCallerFirstName(caller);
+    });
 
     const wakeWordHandler = ({ word }: { word: string }) => {
-      console.log("Did you just say.. ", word)
+      console.log("Did you just say.. ", word);
 
-      triggerNotification({ title: "Some called you!", body: "Look around! Someone is reaching out to you!" })
-      triggerQuickVibration({ duration: 1000 })
-    }
+      triggerNotification({
+        title: "Some called you!",
+        body: "Look around! Someone is reaching out to you!",
+      });
+      triggerQuickVibration({ duration: 1000 });
+    };
 
-    socket.on("wakeWord", wakeWordHandler)
+    socket.on("wakeWord", wakeWordHandler);
 
     // this is just there to make sure audio can play in the background, if not required you may remove it
     allowAudioPlaybackFromBackground();
@@ -146,16 +159,16 @@ export default function RootLayout() {
 
       // Sending the data to the backend continuously start here..................
 
-      if (isStoring){
-        socket.emit("storeThis", audioBuffer)
+      if (isStoring) {
+        socket.emit("storeThis", audioBuffer);
       } else {
         socket.emit("storeChunk", audioBuffer);
       }
       // socket.emit("storeChunk", {audioBuffer, isRecording});
 
       // Sending the data to the backend continuously ends here..................
-    })
-  }, [isStoring])
+    });
+  }, [isStoring]);
 
   useEffect(() => {
     // setup for event listener from the backend starts here................................................
@@ -172,21 +185,31 @@ export default function RootLayout() {
   //All setup related code ends here..............................
 
   const detectionCallback = async (keywordIndex: number) => {
+    console.log("Callers name: ", callerFirstName)
+
     socket.emit("wakeWord");
 
-    console.log("Pico voice detected the word!")
-    triggerNotification({ title: "Pico detected Wake Word", body: "A wake word has been detected!" })
-    
-    const vibrationTime = 1000
+    setTimeout(() => {
+      console.log("Sending wakeWord2...")
+      socket.emit("wakeWord2")
+    }, 4000)
+
+    console.log("Pico voice detected the word!");
+    triggerNotification({
+      title: "Pico detected Wake Word",
+      body: "A wake word has been detected!",
+    });
+
+    const vibrationTime = 1000;
     setIsVibrating(true);
-    triggerQuickVibration({ duration: vibrationTime })
-    setTimeout(() => setIsVibrating(false), vibrationTime)
-    setModelKey("nameAlert")
-    setTotalAlertCounts((prev)=>{
-      const newArr = [...prev]
-      newArr[0] +=1
-      return newArr
-    })
+    triggerQuickVibration({ duration: vibrationTime });
+    setTimeout(() => setIsVibrating(false), vibrationTime);
+    setModelKey("nameAlert");
+    setTotalAlertCounts((prev) => {
+      const newArr = [...prev];
+      newArr[0] += 1;
+      return newArr;
+    });
     router.push("/modal");
   };
 
