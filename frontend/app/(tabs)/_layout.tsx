@@ -119,7 +119,12 @@ export default function RootLayout() {
 
   const detectionCallback = async (keywordIndex: number) => {
     
-    socket.emit("wakeWord");
+    // socket.emit("wakeWord");
+
+    const vibrationTime = 500;
+    setIsVibrating(true);
+    triggerVibration({ duration: vibrationTime, repeat: true });
+    router.push("/modal");
   };
 
   return (
