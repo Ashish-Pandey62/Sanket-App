@@ -1,6 +1,6 @@
 import { TabSlot, Tabs, TabTrigger, TabList } from "expo-router/ui";
 
-import PorcupineProvider from "@/providers/porcupine";
+import PorcupineProvider, { usePorcupineContext } from "@/providers/porcupine";
 import { useEffect } from "react";
 import { Buffer } from "buffer";
 
@@ -29,6 +29,7 @@ export default function RootLayout() {
     alertEnabled,
     socket,
     callerFirstName,
+    isRecording,
     setTotalAlertCounts,
     setCallerFirstName,
   } = useAppContext();
@@ -192,7 +193,8 @@ export default function RootLayout() {
     setTimeout(() => {
       console.log("Sending wakeWord2...")
       socket.emit("wakeWord2")
-    }, 4000)
+    }, 3000)
+
 
     console.log("Pico voice detected the word!");
     triggerNotification({

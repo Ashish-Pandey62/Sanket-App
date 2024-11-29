@@ -27,11 +27,28 @@ const WAKE_WORDS = [
   "भाई-सुन_hi_android_v3_0_0.ppn",
 ];
 
+const MALE_WAKE_WORDS = [
+  "अंकल_hi_android_v3_0_0.ppn",
+  "ओह-दाई_hi_android_v3_0_0.ppn",
+  "दाई-दाई_hi_android_v3_0_0.ppn",
+  "दाई-सुन_hi_android_v3_0_0.ppn",
+  "भाई-भाई_hi_android_v3_0_0.ppn",
+  "भाई-सुन_hi_android_v3_0_0.ppn",
+]
+
+const FEMALE_WAKE_WORDS = [
+  "आंटी-आंटी_hi_android_v3_0_0.ppn",
+  "ओह-दीदी_hi_android_v3_0_0.ppn",
+  "दिदी-सुन_hi_android_v3_0_0.ppn",
+]
+
 const PorcupineContext = createContext<
   | {
       porcupine: PorcupineManager | null;
       startListeningToWakeWords: () => Promise<void>;
       stopListeningToWakeWords: () => Promise<void>;
+      isListening: boolean;
+      setIsListening: React.Dispatch<React.SetStateAction<boolean>>;
     }
   | undefined
 >(undefined);
@@ -42,17 +59,23 @@ const PorcupineProvider: React.FC<
   }
 > = ({ children, detectionCallback }) => {
   const [porcupine, setPorcupine] = useState<PorcupineManager | null>(null);
+  const [isListening, setIsListening] = useState<boolean>(false);
+  const { gender } = useAppContext()
 
   //await this
   const startListeningToWakeWords = async () => {
-    if (porcupine) {
+    if (porcupine && !isListening) {
+      setIsListening(true)
+      console.log("Porcupine is listening...")
       await porcupine.start();
     }
   };
 
   //await this
   const stopListeningToWakeWords = async () => {
-    if (porcupine) {
+    if (porcupine && isListening) {
+      setIsListening(false)
+      console.log("Porcupine is not longer listening...")
       await porcupine.stop();
     }
   };
@@ -63,12 +86,22 @@ const PorcupineProvider: React.FC<
   
         const porcupineManager = await PorcupineManager.fromKeywordPaths(
           ACCESS_KEY,
-          WAKE_WORDS,
+          gender === "Female" ? FEMALE_WAKE_WORDS : MALE_WAKE_WORDS,
           detectionCallback,
           (err) =>
             console.log("We faced an Error detecting the wake word => ", err),
           "porcupine_params_hi.pv" // For hindi words
         );
+
+        // Uncomment For all Genders
+        // const porcupineManager = await PorcupineManager.fromKeywordPaths(
+        //   ACCESS_KEY,
+        //   WAKE_WORDS,
+        //   detectionCallback,
+        //   (err) =>
+        //     console.log("We faced an Error detecting the wake word => ", err),
+        //   "porcupine_params_hi.pv" // For hindi words
+        // );
 
         // Uncomment the code below and comment the above one to use the built in keywords.
 
@@ -95,7 +128,7 @@ const PorcupineProvider: React.FC<
 
   return (
     <PorcupineContext.Provider
-      value={{ porcupine, startListeningToWakeWords, stopListeningToWakeWords }}
+      value={{ porcupine, startListeningToWakeWords, stopListeningToWakeWords, isListening, setIsListening }}
     >
       {children}
     </PorcupineContext.Provider>

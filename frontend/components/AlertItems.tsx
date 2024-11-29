@@ -11,10 +11,11 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useAppContext } from "@/providers/appContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { router } from "expo-router";
+import { usePorcupineContext } from "@/providers/porcupine";
 
 const AlertItems: React.FC<{ isHome: boolean }> = ({ isHome }) => {
-  const { alertEnabled, setAlertEnabled, totalAlertCounts } = useAppContext();
+  const { alertEnabled, setAlertEnabled, totalAlertCounts, isRecording } = useAppContext();
+  const { isListening, stopListeningToWakeWords, startListeningToWakeWords } = usePorcupineContext()
 
   return (
     <FlatList
@@ -39,7 +40,15 @@ const AlertItems: React.FC<{ isHome: boolean }> = ({ isHome }) => {
             </View>
             <Pressable
               className="flex-col items-center gap-1"
-              onPress={() => {
+              onPress={async () => {
+                if (alert.alertKey === "nameAlert"){
+                  if (isListening && alertEnabled[0]){
+                    await stopListeningToWakeWords()
+                  } else if (isRecording && !isListening && !alertEnabled[0]){
+                    await startListeningToWakeWords()
+                  }
+                } 
+
                 setAlertEnabled((prevState) => {
                   const temp = [...prevState];
 
