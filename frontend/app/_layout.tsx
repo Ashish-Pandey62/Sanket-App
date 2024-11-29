@@ -2,10 +2,12 @@ import { Stack } from "expo-router";
 
 import "../global.css";
 import AppProvider from "@/providers/appContext";
+import { StatusBar } from "expo-status-bar";
 
 const RootLayout = () => {
   return (
     <AppProvider>
+      <StatusBar style="dark" backgroundColor="#c084fc" />
       <Stack
         screenOptions={{
           headerShown: false,

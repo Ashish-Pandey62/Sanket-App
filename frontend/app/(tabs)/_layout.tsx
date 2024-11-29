@@ -1,5 +1,4 @@
 import { TabSlot, Tabs, TabTrigger, TabList } from "expo-router/ui";
-import { StatusBar } from "expo-status-bar";
 
 import PorcupineProvider from "@/providers/porcupine";
 import { useEffect } from "react";
@@ -106,6 +105,15 @@ export default function RootLayout() {
       ToastAndroid.show("User Registered Successfully!", ToastAndroid.SHORT)
     })
 
+    const wakeWordHandler = ({ word }: { word: string }) => {
+      console.log("Did you just say.. ", word)
+
+      triggerNotification({ title: "Some called you!", body: "Look around! Someone is reaching out to you!" })
+      triggerQuickVibration({ duration: 1000 })
+    }
+
+    socket.on("wakeWord", wakeWordHandler)
+
     // this is just there to make sure audio can play in the background, if not required you may remove it
     allowAudioPlaybackFromBackground();
   }, []);
@@ -117,8 +125,6 @@ export default function RootLayout() {
       const audioBuffer = Buffer.from(data, "base64");
 
       // Sending the data to the backend continuously start here..................
-
-      console.log("Inside: ", isStoring)
 
       if (isStoring){
         socket.emit("storeThis", audioBuffer)
@@ -156,7 +162,7 @@ export default function RootLayout() {
 
   return (
     <PorcupineProvider detectionCallback={detectionCallback}>
-      <StatusBar style="dark" backgroundColor="#c084fc" />
+      {/* <StatusBar style="dark" backgroundColor="#c084fc" /> */}
       <Tabs className="bg-bg_white">
         <TabSlot />
         <TabList asChild>

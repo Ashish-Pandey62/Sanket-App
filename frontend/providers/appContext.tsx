@@ -16,6 +16,7 @@ export type AlertKeys = "fireAlarm" | "infantCrying" | "doorBell" | "petSound" |
 interface ServerToClient {
   alert: ({ sound_label }: { sound_label: AlertKeys }) => void;
   enrollmentSuccess: () => void;
+  wakeWord: ({ word }: { word: string }) => void;
 }
 
 interface ClientToServer {
@@ -46,6 +47,7 @@ const AppContext = createContext<{
   setIsStoring: React.Dispatch<React.SetStateAction<boolean>>;
   socket: Socket<ServerToClient, ClientToServer>;
   gender: Gender;
+  setGender: React.Dispatch<React.SetStateAction<Gender>>;
 }>({
   isRecording: false,
   setIsRecording: () => {},
@@ -60,7 +62,8 @@ const AppContext = createContext<{
   isStoring: false,
   setIsStoring: () => {},
   socket,
-  gender: "Undisclosed"
+  gender: "Undisclosed",
+  setGender: () => {},
 });
 
 
@@ -109,7 +112,8 @@ const AppProvider: React.FC<PropsWithChildren> = ({ children }) => {
         isStoring,
         setIsStoring,
         socket,
-        gender
+        gender,
+        setGender
       }}
     >
       {children}

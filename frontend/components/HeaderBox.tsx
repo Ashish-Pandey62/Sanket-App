@@ -4,6 +4,7 @@ import MicSwitch from "./MicSwitch";
 import { usePathname } from "expo-router";
 import { icons } from "@/constants";
 import { useAppContext } from "@/providers/appContext";
+import { StatusBar } from "expo-status-bar";
 
 interface HeaderBoxProps {
   title: string;
@@ -13,8 +14,7 @@ interface HeaderBoxProps {
 const HeaderBox: React.FC<HeaderBoxProps> = ({ title, paragraph }) => {
   const path = usePathname();
 
-  const { gender } = useAppContext()
-
+  const { gender } = useAppContext();
 
   return (
     <View className="flex flex-col p-4 bg-purple-400 w-full rounded-b-3xl">
@@ -25,19 +25,27 @@ const HeaderBox: React.FC<HeaderBoxProps> = ({ title, paragraph }) => {
             <MicSwitch />
           </View>
         )}
-        <View className="flex flex-row justify-center align-center">
+        <View className="flex flex-row justify-center align-center mx-auto">
           <Text className="text-white font-bold text-lg">Sanket</Text>
           <Image
             source={require("@/assets/icons/ear.png")}
             style={{ width: 30, height: 30 }}
           />
         </View>
-        <View>
-          <Image
-            source={gender === "Male" ? icons.avatar_male : gender === "Female" ? icons.avatar_female : icons.undisclosed}
-            style={{ width: 50, height: 50 }}
-          />
-        </View>
+        {path !== "/" && (
+          <View>
+            <Image
+              source={
+                gender === "Male"
+                  ? icons.avatar_male
+                  : gender === "Female"
+                  ? icons.avatar_female
+                  : icons.undisclosed
+              }
+              style={{ width: 50, height: 50 }}
+            />
+          </View>
+        )}
       </View>
 
       {/* Second Column */}
