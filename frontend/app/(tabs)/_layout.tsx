@@ -30,11 +30,16 @@ export default function RootLayout() {
     socket,
     callerFirstName,
     isRecording,
+    isVibrating,
     setTotalAlertCounts,
     setCallerFirstName,
   } = useAppContext();
 
   const alertHandler = async ({ sound_label }: { sound_label: AlertKeys }) => {
+    if (isVibrating){
+      return;
+    }
+
     if (sound_label === "fireAlarm" && alertEnabled[1]) {
       setTotalAlertCounts((prev) => {
         const newArr = [...prev];
@@ -181,7 +186,7 @@ export default function RootLayout() {
     };
 
     //setup for event listener from the backend ends here................................................
-  }, [alertEnabled]);
+  }, [alertEnabled, isVibrating]);
 
   //All setup related code ends here..............................
 
@@ -198,8 +203,8 @@ export default function RootLayout() {
 
     console.log("Pico voice detected the word!");
     triggerNotification({
-      title: "Pico detected Wake Word",
-      body: "A wake word has been detected!",
+      title: "Some called you!",
+      body: "Someone is trying to react out to you...",
     });
 
     const vibrationTime = 1000;

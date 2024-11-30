@@ -7,7 +7,7 @@ const AlertScreen = () => {
 
   return (
     <SafeAreaView className="flex-1 items-center gap-5">
-      <HeaderBox title="Welcome" paragraph="Don't worry I'll inform you if someone calls you" />
+      <HeaderBox title="All Alerts" paragraph="You can opt in-or-out of these alerts" />
       <SearchBar />
       <AlertItems isHome={false} />
     </SafeAreaView>

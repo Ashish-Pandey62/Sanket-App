@@ -16,7 +16,7 @@ const VoiceItem: React.FC<{
   const playVoice = async () => {
     //Emit this to the backend
 
-    const response = await fetch("http://10.10.11.40:3000/sound", {
+    const response = await fetch("http://10.10.11.74:3000/sound", {
       method: "POST",
       body: JSON.stringify({
         firstName,
@@ -39,7 +39,7 @@ const VoiceItem: React.FC<{
   };
 
   const deleteData = async () => {
-    await fetch("http://10.10.11.40:3000/delete", {
+    await fetch("http://10.10.11.74:3000/delete", {
       method: "POST",
       body: JSON.stringify({
         firstName,

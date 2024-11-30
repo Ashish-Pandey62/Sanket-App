@@ -33,8 +33,8 @@ const backgroundTask = async (taskDataArguments: any) => {
     while (BackgroundActions.isRunning()) {
         if (count % 5 == 0) {  //to remove
             await BackgroundActions.updateNotification({
-                taskTitle: `5 seconds have passed, Count -> ${count}`,
-                taskDesc: "This is a background task",
+                // taskTitle: `5 seconds have passed, Count -> ${count}`,
+                taskDesc: "Sanket is running in the background",
             });
         }
 

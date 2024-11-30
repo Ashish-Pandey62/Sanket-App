@@ -46,7 +46,7 @@ export const alerts = [
     },
     {
         id: 4,
-        title: "Doorbell/Knocking",
+        title: "Doorbell",
         description: "For recognizing doorbell sounds or knocks.",
         totalAlerts: 0,
         active: true,

@@ -29,7 +29,7 @@ interface ClientToServer {
 }
 
 const socket: Socket<ServerToClient, ClientToServer> = io(
-  "http://10.10.11.40:3000/"
+  "http://10.10.11.74:3000/"
 );
 
 // WebSocket related code goes ends here............................
@@ -93,7 +93,7 @@ const AppProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
   useEffect(() => {
     const getDataFromBackend = async () => {
-      const response = await fetch("http://10.10.11.40:3000/registeredUsers");
+      const response = await fetch("http://10.10.11.74:3000/registeredUsers");
 
       if (!response.ok){
         console.error("Couldn't get the Registered Users from the backend")
